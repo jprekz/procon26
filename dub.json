@@ -1,0 +1,11 @@
+{
+	"name": "procon26",
+	"description": "procon26 analyzer.",
+	"copyright": "Copyright © 2015, jprekz",
+	"authors": ["jprekz"],
+
+	"targetType": "executable",
+
+	"dependencies": {
+	}
+}
