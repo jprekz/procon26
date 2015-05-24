@@ -3,86 +3,78 @@ module stone;
 import std.ascii;
 import std.format;
 
-alias immutable(_Stone) Stone;
-private immutable struct _Stone {
-	byte[8] bitArr;
+alias immutable(byte[8]) Stone;
 
-	pure nothrow this(byte[8] bits) {
-		bitArr = bits;
+pure string toString(Stone s) {
+	string str;
+	foreach (b; s) {
+		str ~= format("%08b", b);
+		str ~= newline;
 	}
-
-	const void toString(scope void delegate(const(char)[]) sink) {
-		foreach (b; bitArr) {
-			sink(format("%08b", b));
-			sink(newline);
-		}
-	}
-
-	pure bool getbit(int x, int y) {
-		return 0 != (bitArr[y] & (0b10000000 >> x));
-	}
-
-	// invert ... 反転するか否か
-	// rotate(0 ~ 3) ... 引数 * 90度 右に回転
-	pure Stone transform(bool invert, int rotate) {
-		assert(rotate >= 0 && rotate < 4);
-
-		if (rotate == 0) {
-			return Stone(invert ? bitArr.flip : bitArr);
-		} else if (rotate == 1) {
-			return Stone(invert ? bitArr.flip.rotateRight : bitArr.rotateRight);
-		} else if (rotate == 2) {
-			return Stone(invert ? bitArr.reverseStatic : bitArr.reverseStatic.flip);
-		} else if (rotate == 3) {
-			return Stone(invert ? bitArr.flip.rotateLeft : bitArr.rotateLeft);
-		}
-		assert(0);
-	}
+	return str;
 }
 
-// flip ... 左右反転
-private alias map!(a => bitflip8(a)) flip;
+pure bool getbit(Stone s, int x, int y) {
+	return 0 != (s[y] & (0b10000000 >> x));
+}
 
-// range不使用版map
-private pure byte[8] map(byte function(byte) f)(byte[8] arr) {
+// invert ... 反転するか否か
+// rotate(0 ~ 3) ... 引数 * 90度 右に回転
+pure Stone transform(Stone s, bool invert, int rotate) {
+	assert(rotate >= 0 && rotate < 4);
+
+	if (rotate == 0) {
+		return invert ? s.flipHorizontal : s;
+	} else if (rotate == 1) {
+		return invert ? s.flipHorizontal.rotateRight : s.rotateRight;
+	} else if (rotate == 2) {
+		return invert ? s.flipVertical : s.flipVertical.flipHorizontal;
+	} else if (rotate == 3) {
+		return invert ? s.flipHorizontal.rotateLeft : s.rotateLeft;
+	}
+	assert(0);
+}
+
+// 左右反転
+private pure Stone flipHorizontal(Stone s) {
 	byte[8] output;
 	for (int i; i < 8; i++) {
-		output[i] = f(arr[i]);
+		output[i] = bitflip8(s[i]);
 	}
 	return output;
 }
 
-// 副作用なしreverse(上下反転に使う)
-private pure byte[8] reverseStatic(byte[8] arr) {
+// 上下反転
+private pure Stone flipVertical(Stone s) {
 	byte[8] output;
 	for (int i; i < 8; i++) {
-		output[i] = arr[7 - i];
+		output[i] = s[7 - i];
 	}
 	return output;
 }
 
 // 右に90度回転
-private pure byte[8] rotateRight(byte[8] arr) {
-	byte[8] buf;
+private pure Stone rotateRight(Stone s) {
+	byte[8] output;
 	for (int i; i < 8; i++) {
 		for (int j = 7; j >= 0; j--) {
-			buf[i] <<= 1;
-			if ((arr[j] & (0x80 >> i)) != 0) buf[i]++;
+			output[i] <<= 1;
+			if ((s[j] & (0x80 >> i)) != 0) output[i]++;
 		}
 	}
-	return buf;
+	return output;
 }
 
 // 左に90度回転
-private pure byte[8] rotateLeft(byte[8] arr) {
-	byte[8] buf;
+private pure Stone rotateLeft(Stone s) {
+	byte[8] output;
 	for (int i; i < 8; i++) {
 		for (int j; j < 8; j++) {
-			buf[i] <<= 1;
-			if ((arr[j] & (0x01 << i)) != 0) buf[i]++;
+			output[i] <<= 1;
+			if ((s[j] & (0x01 << i)) != 0) output[i]++;
 		}
 	}
-	return buf;
+	return output;
 }
 
 // ビット列を左右反転

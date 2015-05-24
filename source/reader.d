@@ -7,10 +7,9 @@ import std.string;
 import stone;
 import field;
 
-alias immutable(_Reader) Reader;
-private immutable struct _Reader {
-	Stone[] stone;
-	Field field;
+struct Reader {
+	immutable Stone[] stone;
+	immutable Field field;
 
 	this(string fileName) {
 		auto file = File(fileName);
@@ -25,7 +24,7 @@ private immutable struct _Reader {
 				f[i] ++;
 			}
 		}
-		field = Field(f);
+		field = f;
 
 		file.readln;
 
@@ -42,7 +41,7 @@ private immutable struct _Reader {
 					b[j] ++;
 				}
 			}
-			st ~= Stone(b);
+			st ~= b;
 			file.readln;
 		}
 		stone = st;

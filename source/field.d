@@ -3,22 +3,17 @@ module field;
 import std.ascii;
 import std.format;
 
-alias immutable(_Field) Field;
-private immutable struct _Field {
-	int[32] bitArr;
+alias immutable(int[32]) Field;
 
-	pure nothrow this(int[32] bits) {
-		bitArr = bits;
+pure string toString(Field f) {
+	string str;
+	foreach (b; f) {
+		str ~= format("%032b", b);
+		str ~= newline;
 	}
+	return str;
+}
 
-	const void toString(scope void delegate(const(char)[]) sink) {
-		foreach (b; bitArr) {
-			sink(format("%032b", b));
-			sink(newline);
-		}
-	}
-
-	pure bool getbit(int x, int y) {
-		return 0 != (bitArr[y] & (0x80000000 >> x));
-	}
+pure bool getbit(Field f, int x, int y) {
+	return 0 != (f[y] & (0x80000000 >> x));
 }
