@@ -22,7 +22,7 @@ struct Stone {
 	}
 
 	// invert ... 反転するか否か
-	// torate(0 ~ 3) ... 引数 * 90度 右に回転
+	// rotate(0 ~ 3) ... 引数 * 90度 右に回転
 	pure Stone transform(bool invert, int rotate) {
 		assert(rotate >= 0 && rotate < 4);
 
