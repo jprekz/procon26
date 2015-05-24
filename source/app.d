@@ -10,7 +10,8 @@ import std.datetime;
 import meu;
 
 void main(string[] args) {
-	meu.start("./practice/quest1.txt");
+	MeuAI meu = new MeuAI("./practice/quest1.txt");
+	meu.start();
 }
 
 void benchMark(int repeat, void delegate() f) {
