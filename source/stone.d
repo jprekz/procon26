@@ -3,8 +3,9 @@ module stone;
 import std.ascii;
 import std.format;
 
-struct Stone {
-	immutable byte[8] bitArr;
+alias immutable(_Stone) Stone;
+private immutable struct _Stone {
+	byte[8] bitArr;
 
 	pure nothrow this(byte[8] bits) {
 		bitArr = bits;

@@ -3,8 +3,9 @@ module field;
 import std.ascii;
 import std.format;
 
-struct Field {
-	immutable int[32] bitArr;
+alias immutable(_Field) Field;
+private immutable struct _Field {
+	int[32] bitArr;
 
 	pure nothrow this(int[32] bits) {
 		bitArr = bits;

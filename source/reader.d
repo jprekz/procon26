@@ -7,7 +7,8 @@ import std.string;
 import stone;
 import field;
 
-struct Reader {
+alias immutable(_Reader) Reader;
+private immutable struct _Reader {
 	Stone[] stone;
 	Field field;
 
@@ -30,6 +31,7 @@ struct Reader {
 
 		// load stones
 		int N = file.readln.chomp.to!int;
+		Stone[] st;
 		for (int i; i < N; i++) {	//i個目
 			byte[8] b = 0;
 			for (int j; j < 8; j++) {	//j行目
@@ -40,8 +42,9 @@ struct Reader {
 					b[j] ++;
 				}
 			}
-			stone ~= Stone(b);
+			st ~= Stone(b);
 			file.readln;
 		}
+		stone = st;
 	}
 }

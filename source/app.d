@@ -20,7 +20,7 @@ void main(string[] args) {
 	writeln(s.transform(true, 1));
 	writeln(s.transform(true, 2));
 	writeln(s.transform(true, 3));
-	
+
 	benchMark(10000000, {
 		assert(!s.getbit(0, 7));
 		assert(!s.transform(true,1).getbit(0, 3));
