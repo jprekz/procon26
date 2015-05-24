@@ -17,3 +17,11 @@ pure string toString(Field f) {
 pure bool getbit(Field f, int x, int y) {
 	return 0 != (f[y] & (0x80000000 >> x));
 }
+
+pure Field complement(Field f) {
+	int[32] output;
+	for (int i; i < 32; i++) {
+		output[i] = ~f[i];
+	}
+	return output;
+}
