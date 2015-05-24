@@ -21,6 +21,8 @@ struct Stone {
 		return 0 != (bitArr[y] & (0b10000000 >> x));
 	}
 
+	// invert ... 反転するか否か
+	// torate(0 ~ 3) ... 引数 * 90度 右に回転
 	pure Stone transform(bool invert, int rotate) {
 		assert(rotate >= 0 && rotate < 4);
 
@@ -37,8 +39,10 @@ struct Stone {
 	}
 }
 
+// flip ... 左右反転
 private alias map!(a => bitflip8(a)) flip;
 
+// range不使用版map
 private pure byte[8] map(byte function(byte) f)(byte[8] arr) {
 	byte[8] output;
 	for (int i; i < 8; i++) {
@@ -47,6 +51,7 @@ private pure byte[8] map(byte function(byte) f)(byte[8] arr) {
 	return output;
 }
 
+// 副作用なしreverse(上下反転に使う)
 private pure byte[8] reverseStatic(byte[8] arr) {
 	byte[8] output;
 	for (int i; i < 8; i++) {
@@ -55,6 +60,7 @@ private pure byte[8] reverseStatic(byte[8] arr) {
 	return output;
 }
 
+// 右に90度回転
 private pure byte[8] rotateRight(byte[8] arr) {
 	byte[8] buf;
 	for (int i; i < 8; i++) {
@@ -66,6 +72,7 @@ private pure byte[8] rotateRight(byte[8] arr) {
 	return buf;
 }
 
+// 左に90度回転
 private pure byte[8] rotateLeft(byte[8] arr) {
 	byte[8] buf;
 	for (int i; i < 8; i++) {
@@ -77,6 +84,7 @@ private pure byte[8] rotateLeft(byte[8] arr) {
 	return buf;
 }
 
+// ビット列を左右反転
 private pure byte bitflip8(byte a) {
 	int v = a;
 	v = ((v & 0b10101010) >> 1) | ((v & 0b01010101) << 1);
