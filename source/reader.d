@@ -7,7 +7,7 @@ import std.string;
 import stone;
 import field;
 
-struct Reader {
+class Reader {
 	immutable Stone[] stone;
 	immutable Field field;
 
