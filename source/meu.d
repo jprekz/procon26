@@ -10,9 +10,11 @@ import operate;
 class MeuAI {
 	const Reader problem;
 	const Operate[] allOperateList;
+	File outputFile;
 
-	this(string fileName) {
-		problem = new Reader(fileName);
+	this(string problemName, string outputName) {
+		problem = new Reader(problemName);
+		outputFile = File(outputName, "w");
 		allOperateList = Operate.calcAllOperateList();
 	}
 
@@ -55,9 +57,9 @@ class MeuAI {
 			bestScore = f.countEmptyCells;
 			f.toString.writeln;
 			bestScore.writeln;
+			operateList.outputAnswer(outputFile);
 		}
-		//writeln(operateList.getAnswerFormat);	//長い
-		return true;
+		return false;
 	}
 }
 

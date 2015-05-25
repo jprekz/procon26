@@ -2,6 +2,7 @@ module operate;
 
 import std.ascii;
 import std.conv;
+import std.stdio;
 
 class Operate {
 	public:
@@ -25,13 +26,16 @@ class Operate {
 	}
 
 	override const string toString() {
-		if (passed) return newline;
+		if (passed) return "";
 		return x.to!string ~ " " ~ y.to!string ~ " " ~ (invert ? "T " : "H ") ~ (rotate * 90).to!string;
 	}
 
-	string getAnswerFormat() {
-		if (before is null) return this.toString;
-		return before.getAnswerFormat() ~ newline ~ this.toString;
+	void outputAnswer(T)(T output) {
+		if (!(before is null)) {
+			before.outputAnswer(output);
+		}
+		output.writeln(this.toString);
+		return;
 	}
 
 	static Operate[] calcAllOperateList() {
