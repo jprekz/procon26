@@ -1,6 +1,7 @@
 module meu;
 
 import std.stdio;
+import std.string;
 
 import field;
 import reader;
@@ -9,12 +10,12 @@ import operate;
 
 class MeuAI {
 	const Reader problem;
+	void delegate(string[]) findAnswerDelegate;
 	const Operate[] allOperateList;
-	File outputFile;
 
-	this(string problemName, string outputName) {
+	this(string problemName, void delegate(string[]) findAnswer) {
 		problem = new Reader(problemName);
-		outputFile = File(outputName, "w");
+		findAnswerDelegate = findAnswer;
 		allOperateList = Operate.calcAllOperateList();
 	}
 
@@ -57,9 +58,14 @@ class MeuAI {
 			bestScore = f.countEmptyCells;
 			f.toString.writeln;
 			bestScore.writeln;
-			operateList.outputAnswer(outputFile);
+			writeln("Stopping!");
+			writeln("Continue?(y/n)");
+			if (readln.chomp != "y") {
+				findAnswerDelegate(operateList.getAnswer());
+				return false;
+			}
 		}
-		return false;
+		return true;
 	}
 }
 

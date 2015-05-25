@@ -30,12 +30,12 @@ class Operate {
 		return x.to!string ~ " " ~ y.to!string ~ " " ~ (invert ? "T " : "H ") ~ (rotate * 90).to!string;
 	}
 
-	void outputAnswer(T)(T output) {
-		if (!(before is null)) {
-			before.outputAnswer(output);
+	string[] getAnswer() {
+		string[] s = [this.toString];
+		if (before is null) {
+			return s;
 		}
-		output.writeln(this.toString);
-		return;
+		return before.getAnswer() ~ s;
 	}
 
 	static Operate[] calcAllOperateList() {
