@@ -69,7 +69,7 @@ class MeuAI {
 	}
 }
 
-pure bool isProtrude(Stone stoneRotated, const Operate ope) {
+bool isProtrude(Stone stoneRotated, const Operate ope) pure {
 	// 右端はみ出し判定
 	if (ope.x > 24) {
 		foreach (b; stoneRotated) {
@@ -85,7 +85,7 @@ pure bool isProtrude(Stone stoneRotated, const Operate ope) {
 	return false;
 }
 
-pure Field putStoneOnField(Stone stoneRotated, const Operate ope) {
+Field putStoneOnField(Stone stoneRotated, const Operate ope) pure {
 	int[32] output;
 	int e = (ope.y + 8 < 32) ? ope.y + 8 : 32;
 	for (int i = ope.y; i < e; i++) {

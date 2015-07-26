@@ -21,11 +21,11 @@ class Operate {
 		before = o;
 	}
 
-	const Operate next(Operate b) {
+	Operate next(Operate b) const {
 		return new Operate(passed, x, y, invert, rotate, b);
 	}
 
-	override const string toString() {
+	override string toString() const {
 		if (passed) return "";
 		return x.to!string ~ " " ~ y.to!string ~ " " ~ (invert ? "T " : "H ") ~ (rotate * 90).to!string;
 	}

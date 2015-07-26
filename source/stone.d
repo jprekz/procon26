@@ -5,7 +5,7 @@ import std.format;
 
 alias immutable(byte[8]) Stone;
 
-pure string toString(Stone s) {
+string toString(Stone s) pure {
 	string str;
 	foreach (b; s) {
 		str ~= format("%08b", b);
@@ -14,13 +14,13 @@ pure string toString(Stone s) {
 	return str;
 }
 
-pure bool getbit(Stone s, int x, int y) {
-	return 0 != (s[y] & (0b10000000 >> x));
+bool getbit(Stone s, int x, int y) pure {
+	return 0 != (s[y] & (0b10000000 >>> x));
 }
 
 // invert ... 反転するか否か
 // rotate(0 ~ 3) ... 引数 * 90度 右に回転
-pure Stone transform(Stone s, bool invert, int rotate) {
+Stone transform(Stone s, bool invert, int rotate) pure {
 	assert(rotate >= 0 && rotate < 4);
 
 	if (rotate == 0) {
@@ -36,7 +36,7 @@ pure Stone transform(Stone s, bool invert, int rotate) {
 }
 
 // 左右反転
-private pure Stone flipHorizontal(Stone s) {
+private Stone flipHorizontal(Stone s) pure {
 	byte[8] output;
 	for (int i; i < 8; i++) {
 		output[i] = bitflip8(s[i]);
@@ -45,7 +45,7 @@ private pure Stone flipHorizontal(Stone s) {
 }
 
 // 上下反転
-private pure Stone flipVertical(Stone s) {
+private Stone flipVertical(Stone s) pure {
 	byte[8] output;
 	for (int i; i < 8; i++) {
 		output[i] = s[7 - i];
@@ -54,7 +54,7 @@ private pure Stone flipVertical(Stone s) {
 }
 
 // 右に90度回転
-private pure Stone rotateRight(Stone s) {
+private Stone rotateRight(Stone s) pure {
 	byte[8] output;
 	for (int i; i < 8; i++) {
 		for (int j = 7; j >= 0; j--) {
@@ -66,7 +66,7 @@ private pure Stone rotateRight(Stone s) {
 }
 
 // 左に90度回転
-private pure Stone rotateLeft(Stone s) {
+private Stone rotateLeft(Stone s) pure {
 	byte[8] output;
 	for (int i; i < 8; i++) {
 		for (int j; j < 8; j++) {
@@ -78,7 +78,7 @@ private pure Stone rotateLeft(Stone s) {
 }
 
 // ビット列を左右反転
-private pure byte bitflip8(byte a) {
+private byte bitflip8(byte a) pure {
 	int v = a;
 	v = ((v & 0b10101010) >> 1) | ((v & 0b01010101) << 1);
 	v = ((v & 0b11001100) >> 2) | ((v & 0b00110011) << 2);
