@@ -10,8 +10,8 @@
 
 必要なもの:
 
-  * dmd 2.067.0 or newer
-  * dub 0.9.22 or newer
+  * dmd 2.067.0 or later
+  * dub 0.9.22 or later
 
 以下を実行するとコンパイルされ自動で実行される:
 
