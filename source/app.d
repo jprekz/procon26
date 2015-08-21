@@ -7,14 +7,14 @@ import std.array;
 import std.algorithm;
 import std.datetime;
 
-import meu;
+import dfs;
 
 void main(string[] args) {
-	MeuAI meu = new MeuAI("./practice/quest1.txt", delegate void(ans) {
+	ProconDFS dfs = new ProconDFS("./practice/quest1.txt", delegate void(ans) {
 		File outputFile = File("./output.txt", "w");
 		ans.each!(str => outputFile.writeln(str));
 	});
-	meu.start();
+	dfs.start();
 }
 
 void benchMark(int repeat, void delegate() f) {

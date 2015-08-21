@@ -1,4 +1,4 @@
-module meu;
+module dfs;
 
 import std.stdio;
 import std.string;
@@ -8,7 +8,7 @@ import reader;
 import stone;
 import operate;
 
-class MeuAI {
+class ProconDFS {
 	const Reader problem;
 	void delegate(string[]) findAnswerDelegate;
 	const Operate[] allOperateList;
