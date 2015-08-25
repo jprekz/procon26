@@ -1,4 +1,4 @@
-module field;
+module dfs.field;
 
 import std.ascii;
 import std.format;

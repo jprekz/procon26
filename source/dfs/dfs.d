@@ -1,12 +1,12 @@
-module dfs;
+module dfs.dfs;
 
 import std.stdio;
 import std.string;
 
-import field;
-import reader;
-import stone;
-import operate;
+import dfs.field;
+import dfs.reader;
+import dfs.stone;
+import dfs.operate;
 
 class ProconDFS {
 	const Reader problem;

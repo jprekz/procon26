@@ -1,4 +1,4 @@
-module operate;
+module dfs.operate;
 
 import std.ascii;
 import std.conv;

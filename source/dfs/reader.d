@@ -1,11 +1,11 @@
-module reader;
+module dfs.reader;
 
 import std.conv;
 import std.stdio;
 import std.string;
 
-import stone;
-import field;
+import dfs.stone;
+import dfs.field;
 
 class Reader {
 	immutable Stone[] stone;

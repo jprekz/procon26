@@ -7,7 +7,7 @@ import std.array;
 import std.algorithm;
 import std.datetime;
 
-import dfs;
+import dfs.dfs;
 
 void main(string[] args) {
 	ProconDFS dfs = new ProconDFS("./practice/quest1.txt", delegate void(ans) {

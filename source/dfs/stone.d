@@ -1,4 +1,4 @@
-module stone;
+module dfs.stone;
 
 import std.ascii;
 import std.format;
