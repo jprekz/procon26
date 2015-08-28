@@ -1,6 +1,6 @@
 module charlotte.problemtypes;
 
-struct Problem {
+class Problem {
     Field field;
     Stone[] stones;
 }
