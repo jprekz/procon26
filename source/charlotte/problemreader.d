@@ -22,7 +22,7 @@ class Reader {
                 f[i][j] = (s[j] == '0') ? 0 : 1;
 			}
 		}
-		field = f;
+		field = Field(f);
 
 		file.readln;
 
@@ -37,7 +37,7 @@ class Reader {
                     b[j][k] = (s[k] == '0') ? 0 : 1;
 				}
 			}
-			st ~= b;
+			st ~= Stone(b);
 			file.readln;
 		}
 		stone = st.idup;

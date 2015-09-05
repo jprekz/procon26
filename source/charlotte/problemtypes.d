@@ -5,9 +5,35 @@ class Problem {
     Stone[] stones;
 }
 
-alias bool[8][8] Stone;
+struct Stone {
+    bool[8][8] _stone;
+    alias _stone this;
+    string toString() const {
+        char[] str;
+        foreach (a; _stone) {
+            foreach (b; a) {
+                str ~= (b) ? '#' : '-';
+            }
+            str ~= '\n';
+        }
+        return str.idup;
+    }
+}
 
-alias bool[32][32] Field;
+struct Field {
+    bool[32][32] _field;
+    alias _field this;
+    string toString() const {
+        char[] str;
+        foreach (a; _field) {
+            foreach (b; a) {
+                str ~= (b) ? '#' : '-';
+            }
+            str ~= '\n';
+        }
+        return str.idup;
+    }
+}
 
 unittest {
     assert(Stone.sizeof == 64);
