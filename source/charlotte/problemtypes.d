@@ -2,7 +2,7 @@ module charlotte.problemtypes;
 
 class Problem {
     Field field;
-    Stone[] stones;
+    Stone[] stone;
 }
 
 struct Stone {
