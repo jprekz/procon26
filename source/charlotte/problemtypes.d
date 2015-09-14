@@ -9,6 +9,16 @@ struct Stone {
     bool[8][8] _stone;
     alias _stone this;
 
+    Stone inv() {
+        bool[8][8] res;
+        for (int i; i < 8; i++) {
+            for (int j; j < 8; j++) {
+                res[i][j] = !_stone[i][j];
+            }
+        }
+        return Stone(res);
+    }
+
     Stone opBinary(string op)(Stone rhs) {
         static if (op == "&" || op == "|" || op == "^") {
             bool[8][8] l = _stone;
@@ -40,6 +50,16 @@ struct Stone {
 struct Field {
     bool[32][32] _field;
     alias _field this;
+
+    Field inv() {
+        bool[32][32] res;
+        for (int i; i < 32; i++) {
+            for (int j; j < 32; j++) {
+                res[i][j] = !_field[i][j];
+            }
+        }
+        return Field(res);
+    }
 
     Field opBinary(string op)(Field rhs) {
         static if (op == "&" || op == "|" || op == "^") {
@@ -83,5 +103,6 @@ unittest {
         [0,0,0,0,0,0,0,0]
     ]);
     assert(s[1][0] == true);
+    assert(s.inv.inv == s);
     assert((s & s) == s);
 }
