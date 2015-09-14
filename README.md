@@ -34,12 +34,13 @@ dub --build=release
 
 2015-08-25 20:49 とりあえず適当に書いた深さ優先探索のコードは隔離して, 新しくちゃんと設計しつつ書き直す。いいモジュール名思いつかなかったからcharlotteにした
 
-#### charlotteの設計メモ (最終更新: 2015/08/28 3:53)
+#### charlotteの設計メモ (最終更新: 2015/09/15)
 - 型定義
   - charlotte.problemtypes
     - Problem型
     - Stone型, Field型
       - 単純なbool型の配列で持つのが無難か?
+      - int型等の配列にして探索中に色々なデータを持たせるのもアリか
   - charlotte.answertypes
     - Answer型
       - 一つの回答データを表す。Operation型の配列のエイリアス。
@@ -59,6 +60,6 @@ dub --build=release
   - 敷地を部分ごとに分解するとかも
 - Search
   - DFS(再実装することになるが一応。以前のコードは妙なバグが有る)
-    - Placementの全パターンを列挙するRangeを用意。allPlacementとする
+    - Placeの全パターンを列挙するRangeを用意。allPlaceListとする
     - Node型(int depth, Answer searchingAnswer, Field nowField, Field placeableMap, bool placeable みたいな)を用意
     - 現在のNodeに対し, 実行可能な操作(次の石の配置)を列挙, 再帰
