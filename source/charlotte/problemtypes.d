@@ -81,7 +81,7 @@ struct Field {
     	int output;
     	for (int x; x < 32; x++) {
     		for (int y; y < 32; y++) {
-    			if (_field[y][x]) output++;
+    			if (!_field[y][x]) output++;
     		}
     	}
     	return output;

@@ -50,11 +50,11 @@ class DFS {
 			Node now = nodeStack.back;
 			nodeStack.popBack();
 
-			now.depth.writeln();
 			if (now.depth >= problem.stone.length) {
 				end(now.nowField, now.searchingAnswer);
 				continue;
 			}
+			
 			nodeStack ~= new Node(
 				now.depth + 1,
 				now.nowField,
