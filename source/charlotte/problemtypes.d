@@ -9,7 +9,7 @@ struct Stone {
     bool[8][8] _stone;
     alias _stone this;
 
-    Stone inv() {
+    Stone inv() const {
         bool[8][8] res;
         for (int i; i < 8; i++) {
             for (int j; j < 8; j++) {
@@ -51,7 +51,7 @@ struct Field {
     bool[32][32] _field;
     alias _field this;
 
-    Field inv() {
+    Field inv() const {
         bool[32][32] res;
         for (int i; i < 32; i++) {
             for (int j; j < 32; j++) {
