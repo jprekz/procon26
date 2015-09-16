@@ -1,18 +1,19 @@
 module charlotte.answertypes;
 
-import std.variant;
+class Operation {
+    Place place;
+    bool passed;
+    Operation before;
 
-alias Operation[] Answer;
+    this(Place p, Operation o) {
+        place = p;
+        passed = false;
+        before = o;
+    }
 
-struct Operation {
-    struct Pass {}
-    static pass = Pass();
-
-    Algebraic!(Place, Pass) _operation;
-    alias _operation this;
-
-    this(T)(T init) {
-        _operation = init;
+    this(Operation o) {
+        passed = true;
+        before = o;
     }
 }
 
@@ -29,9 +30,4 @@ enum Rotation {
 
 unittest {
     auto p = Place(true, Rotation.deg0, 1, 2);
-    Operation a = Operation.pass;
-    Operation b = p;
-    assert(a == Operation.pass);
-    Operation[2] opes;
-    Answer ans = opes;
 }
