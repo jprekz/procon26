@@ -8,9 +8,10 @@ import std.algorithm;
 import std.datetime;
 
 import dfs.dfs;
+import charlotte.dfs;
 
 void main(string[] args) {
-	ProconDFS dfs = new ProconDFS("./practice/quest1.txt", delegate void(ans) {
+	DFS dfs = new DFS("./practice/quest1.txt", delegate void(ans) {
 		File outputFile = File("./output.txt", "w");
 		ans.each!(str => outputFile.writeln(str));
 	});
