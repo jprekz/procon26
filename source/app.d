@@ -13,7 +13,9 @@ import charlotte.dfs;
 void main(string[] args) {
 	DFS dfs = new DFS("./practice/quest1.txt", delegate void(ans) {
 		File outputFile = File("./output.txt", "w");
-		ans.each!(str => outputFile.writeln(str));
+		foreach (string s; ans) {
+			outputFile.writeln(s);
+		}
 	});
 	dfs.start();
 }
