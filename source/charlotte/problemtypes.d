@@ -77,6 +77,16 @@ struct Field {
         }
     }
 
+    int countEmptyCells() pure {
+    	int output;
+    	for (int x; x < 32; x++) {
+    		for (int y; y < 32; y++) {
+    			if (_field[y][x]) output++;
+    		}
+    	}
+    	return output;
+    }
+
     string toString() const {
         char[] str;
         foreach (a; _field) {
@@ -114,7 +124,7 @@ Stone transform(Stone s, bool invert, int rotate) pure {
         if (!invert) {
             return stMap!("output[b][7-a] = s[a][b];");
         } else {
-            return stMap!("output[b][a] = s[a][b];");
+            return stMap!("output[7-b][7-a] = s[a][b];");
         }
 	} else if (rotate == 2) {
         if (!invert) {
@@ -126,7 +136,7 @@ Stone transform(Stone s, bool invert, int rotate) pure {
         if (!invert) {
             return stMap!("output[7-b][a] = s[a][b];");
         } else {
-            return stMap!("output[7-b][7-a] = s[a][b];");
+            return stMap!("output[b][a] = s[a][b];");
         }
 	}
     assert(0);

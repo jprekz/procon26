@@ -43,51 +43,71 @@ class DFS {
 		));
 	}
 
-	bool search(Node now) {
-		if (now.depth >= problem.stone.length) {
-			now.nowField.writeln;
-			now.searchingAnswer.writeln;
-			return false;
-		}
-		now.depth.writeln();
-		foreach (Place p; allPlaceList) {
-			// 石を回転
-			Stone stoneRotated = problem.stone[now.depth].transform(p.flip, p.rotate);
+	Node[] nodeStack;
+	void search(Node firstNode) {
+		nodeStack ~= firstNode;
+		while (nodeStack.length != 0) {
+			Node now = nodeStack.back;
+			nodeStack.popBack();
 
-			// 石がフィールド外にはみ出さないか
-			if (stoneRotated.isProtrude(p.x, p.y)) continue;
-
-			// 石をField座標に配置
-			Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
-
-			// 石がおける位置にあるか
-			if ((placedStone & now.nowField) != Field.init ||
-				(placedStone & now.placeableMap) == Field.init) {
+			now.depth.writeln();
+			if (now.depth >= problem.stone.length) {
+				end(now.nowField, now.searchingAnswer);
 				continue;
 			}
-
-			search( new Node(
+			nodeStack ~= new Node(
 				now.depth + 1,
-				now.nowField | placedStone,
-				now.placeableMap | placedStone.bordering,
-				false,
-				new Operation(p, now.searchingAnswer)
-			));
+				now.nowField,
+				now.placeableMap,
+				now.first,
+				new Operation(now.searchingAnswer)
+			);
+			foreach (Place p; allPlaceList) {
+				// 石を回転
+				Stone stoneRotated = problem.stone[now.depth].transform(p.flip, p.rotate);
+
+				// 石がフィールド外にはみ出さないか
+				if (stoneRotated.isProtrude(p.x, p.y)) continue;
+
+				// 石をField座標に配置
+				Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
+
+				// 石がおける位置にあるか
+				if ((placedStone & now.nowField) != Field.init ||
+					(placedStone & now.placeableMap) == Field.init) {
+					continue;
+				}
+
+				nodeStack ~= new Node(
+					now.depth + 1,
+					now.nowField | placedStone,
+					(now.first) ? placedStone.bordering
+						: (now.placeableMap | placedStone.bordering),
+					false,
+					new Operation(p, now.searchingAnswer)
+				);
+			}
 		}
+	}
 
-		search(new Node(
-			now.depth + 1,
-			now.nowField,
-			now.placeableMap,
-			now.first,
-			new Operation(now.searchingAnswer)
-		));
-
-		return false;
+	int bestScore = 1024;
+	bool end(Field f, Operation ans) {
+		if (bestScore > f.countEmptyCells) {
+			bestScore = f.countEmptyCells;
+			f.toString.writeln;
+			bestScore.writeln;
+			writeln("Stopping!");
+			writeln("Continue?(y/n)");
+			if (readln.chomp != "y") {
+				findAnswerDelegate(ans.getAnswer());
+				return false;
+			}
+		}
+		return true;
 	}
 }
 
-Field bordering(ref const Field f) {
+Field bordering(ref const Field f) pure {
 	Field output;
 	for (int x; x < 32; x++) {
 		for (int y; y < 32; y++) {
@@ -103,7 +123,7 @@ Field bordering(ref const Field f) {
 	return output;
 }
 
-bool isProtrude(Stone stoneRotated, int dx, int dy) {
+bool isProtrude(Stone stoneRotated, int dx, int dy) pure {
 	for (int y; y < 8; y++) {
 		for (int x; x < 8; x++) {
 			if (!stoneRotated[y][x]) continue;
@@ -116,7 +136,7 @@ bool isProtrude(Stone stoneRotated, int dx, int dy) {
 	return false;
 }
 
-Field putStoneOnField(Stone stoneRotated, int dx, int dy) {
+Field putStoneOnField(Stone stoneRotated, int dx, int dy) pure {
 	Field output;
 	for (int y; y < 8; y++) {
 		for (int x; x < 8; x++) {
@@ -138,5 +158,6 @@ Place[] calcAllPlaceList() pure {
             }
         }
     }
+	ls.reverse();
     return ls;
 }
