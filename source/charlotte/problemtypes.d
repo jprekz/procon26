@@ -1,10 +1,5 @@
 module charlotte.problemtypes;
 
-class Problem {
-    Field field;
-    Stone[] stone;
-}
-
 struct Stone {
     bool[8][8] _stone;
     alias _stone this;
@@ -163,5 +158,4 @@ unittest {
     assert(s.transform(false, 0) == s);
     assert(s.transform(true, 0).transform(true, 0) == s);
     assert(s.transform(false, 1).transform(false, 3) == s);
-
 }

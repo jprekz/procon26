@@ -37,7 +37,6 @@ dub --build=release
 #### charlotteの設計メモ (最終更新: 2015/09/18)
 - 型定義
   - charlotte.problemtypes
-    - Problem型
     - Stone型, Field型
       - 単純なbool型の配列で持つのが無難か?
       - int型等の配列にして探索中に色々なデータを持たせるのもアリか

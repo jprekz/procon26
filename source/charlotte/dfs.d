@@ -13,8 +13,13 @@ import charlotte.problemtypes;
 
 class DFS {
 	const Reader problem;
-	void delegate(string[]) findAnswerDelegate;
+	const void delegate(string[]) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
+
+	this(string problemName, void delegate(string[]) findAnswer) {
+		problem = new Reader(problemName);
+		findAnswerDelegate = findAnswer;
+	}
 
 	class Node {
 	    int depth;
@@ -26,11 +31,6 @@ class DFS {
 			depth = d; nowField = n; placeableMap = p;
 			first = f; searchingAnswer = s;
 		}
-	}
-
-	this(string problemName, void delegate(string[]) findAnswer) {
-		problem = new Reader(problemName);
-		findAnswerDelegate = findAnswer;
 	}
 
 	void start() {
@@ -46,15 +46,18 @@ class DFS {
 	Node[] nodeStack;
 	void search(Node firstNode) {
 		nodeStack ~= firstNode;
+		const int stonesTotal = problem.stone.length;
+
 		while (nodeStack.length != 0) {
 			Node now = nodeStack.back;
 			nodeStack.popBack();
 
-			if (now.depth >= problem.stone.length) {
+			if (now.depth >= stonesTotal) {
 				end(now.nowField, now.searchingAnswer);
 				continue;
 			}
 
+			// パス
 			nodeStack ~= new Node(
 				now.depth + 1,
 				now.nowField,
@@ -62,6 +65,7 @@ class DFS {
 				now.first,
 				new Operation(now.searchingAnswer)
 			);
+
 			foreach (Place p; allPlaceList) {
 				// 石を回転
 				Stone stoneRotated = problem.stone[now.depth].transform(p.flip, p.rotate);
@@ -72,7 +76,7 @@ class DFS {
 				// 石をField座標に配置
 				Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
 
-				// 石がおける位置にあるか
+				// 石が置ける位置にあるか
 				if ((placedStone & now.nowField) != Field.init ||
 					(placedStone & now.placeableMap) == Field.init) {
 					continue;
@@ -91,18 +95,12 @@ class DFS {
 	}
 
 	int bestScore = 1024;
-	bool end(Field f, Operation ans) {
-		if (bestScore > f.countEmptyCells) {
-			bestScore = f.countEmptyCells;
-			f.toString.writeln;
-			bestScore.writeln;
-			//writeln("Continue?(y/n)");
-			//if (readln.chomp != "y") {
-				findAnswerDelegate(ans.getAnswer());
-				return false;
-			//}
-		}
-		return true;
+	void end(Field f, Operation ans) {
+		if (bestScore <= f.countEmptyCells) return;
+		bestScore = f.countEmptyCells;
+		f.toString.writeln;
+		bestScore.writeln;
+		findAnswerDelegate(ans.getAnswer());
 	}
 }
 
