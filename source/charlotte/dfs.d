@@ -54,7 +54,7 @@ class DFS {
 				end(now.nowField, now.searchingAnswer);
 				continue;
 			}
-			
+
 			nodeStack ~= new Node(
 				now.depth + 1,
 				now.nowField,
@@ -96,12 +96,11 @@ class DFS {
 			bestScore = f.countEmptyCells;
 			f.toString.writeln;
 			bestScore.writeln;
-			writeln("Stopping!");
-			writeln("Continue?(y/n)");
-			if (readln.chomp != "y") {
+			//writeln("Continue?(y/n)");
+			//if (readln.chomp != "y") {
 				findAnswerDelegate(ans.getAnswer());
 				return false;
-			}
+			//}
 		}
 		return true;
 	}
