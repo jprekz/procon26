@@ -104,22 +104,6 @@ class DFS {
 	}
 }
 
-Field bordering(ref const Field f) pure {
-	Field output;
-	for (int x; x < 32; x++) {
-		for (int y; y < 32; y++) {
-			if (f[y][x]) continue;
-			if (((y != 0) && f[y-1][x]) ||
-				((x != 0) && f[y][x-1]) ||
-				((x != 31) && f[y][x+1]) ||
-				((y != 31) && f[y+1][x])) {
-				output[y][x] = true;
-			}
-		}
-	}
-	return output;
-}
-
 bool isProtrude(Stone stoneRotated, int dx, int dy) pure {
 	for (int y; y < 8; y++) {
 		for (int x; x < 8; x++) {

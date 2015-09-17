@@ -43,6 +43,22 @@ struct Map(int x, int y) {
     	return output;
     }
 
+    typeof(this) bordering() const {
+    	bool[y][x] res;
+    	for (int i; i < y; i++) {
+    		for (int j; j < x; j++) {
+    			if (_map[i][j]) continue;
+    			if (((i != 0)     && _map[i - 1][j]) ||
+    				((j != 0)     && _map[i][j - 1]) ||
+    				((j != x - 1) && _map[i][j + 1]) ||
+    				((i != y - 1) && _map[i + 1][j])) {
+    				res[i][j] = true;
+    			}
+    		}
+    	}
+    	return typeof(this)(res);
+    }
+
     string toString() const {
         char[] str;
         foreach (a; _map) {
