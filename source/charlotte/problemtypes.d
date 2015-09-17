@@ -1,72 +1,33 @@
 module charlotte.problemtypes;
 
-struct Stone {
-    bool[8][8] _stone;
-    alias _stone this;
+alias Map!(8, 8) Stone;
+alias Map!(32, 32) Field;
 
-    Stone inv() const {
-        bool[8][8] res;
-        for (int i; i < 8; i++) {
-            for (int j; j < 8; j++) {
-                res[i][j] = !_stone[i][j];
+struct Map(int x, int y) {
+    bool[y][x] _map;
+    alias _map this;
+
+    typeof(this) inv() const {
+        bool[y][x] res;
+        for (int i; i < y; i++) {
+            for (int j; j < x; j++) {
+                res[i][j] = !_map[i][j];
             }
         }
-        return Stone(res);
+        return typeof(this)(res);
     }
 
-    Stone opBinary(string op)(Stone rhs) {
+    typeof(this) opBinary(string op)(typeof(this) rhs) {
         static if (op == "&" || op == "|" || op == "^") {
-            bool[8][8] l = _stone;
-            bool[8][8] r = rhs._stone;
-            bool[8][8] res;
-            for (int i; i < 8; i++) {
-                for (int j; j < 8; j++) {
+            bool[y][x] l = _map;
+            bool[y][x] r = rhs._map;
+            bool[y][x] res;
+            for (int i; i < y; i++) {
+                for (int j; j < x; j++) {
                     res[i][j] = mixin("l[i][j]"~op~"r[i][j]");
                 }
             }
-            return Stone(res);
-        } else {
-            static assert(0, "Operator "~op~" not implemented");
-        }
-    }
-
-    string toString() const {
-        char[] str;
-        foreach (a; _stone) {
-            foreach (b; a) {
-                str ~= (b) ? '#' : '-';
-            }
-            str ~= '\n';
-        }
-        return str.idup;
-    }
-}
-
-struct Field {
-    bool[32][32] _field;
-    alias _field this;
-
-    Field inv() const {
-        bool[32][32] res;
-        for (int i; i < 32; i++) {
-            for (int j; j < 32; j++) {
-                res[i][j] = !_field[i][j];
-            }
-        }
-        return Field(res);
-    }
-
-    Field opBinary(string op)(Field rhs) {
-        static if (op == "&" || op == "|" || op == "^") {
-            bool[32][32] l = _field;
-            bool[32][32] r = rhs._field;
-            bool[32][32] res;
-            for (int i; i < 32; i++) {
-                for (int j; j < 32; j++) {
-                    res[i][j] = mixin("l[i][j]"~op~"r[i][j]");
-                }
-            }
-            return Field(res);
+            return typeof(this)(res);
         } else {
             static assert(0, "Operator "~op~" not implemented");
         }
@@ -74,9 +35,9 @@ struct Field {
 
     int countEmptyCells() pure {
     	int output;
-    	for (int x; x < 32; x++) {
-    		for (int y; y < 32; y++) {
-    			if (!_field[y][x]) output++;
+    	for (int i; i < y; i++) {
+    		for (int j; j < x; j++) {
+    			if (!_map[i][j]) output++;
     		}
     	}
     	return output;
@@ -84,7 +45,7 @@ struct Field {
 
     string toString() const {
         char[] str;
-        foreach (a; _field) {
+        foreach (a; _map) {
             foreach (b; a) {
                 str ~= (b) ? '#' : '-';
             }
