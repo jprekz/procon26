@@ -33,6 +33,16 @@ struct Map(int x, int y) {
         }
     }
 
+    int countCells() pure {
+    	int output;
+    	for (int i; i < y; i++) {
+    		for (int j; j < x; j++) {
+    			if (_map[i][j]) output++;
+    		}
+    	}
+    	return output;
+    }
+
     int countEmptyCells() pure {
     	int output;
     	for (int i; i < y; i++) {
