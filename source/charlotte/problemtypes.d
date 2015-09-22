@@ -114,6 +114,30 @@ Stone transform(Stone s, bool invert, int rotate) pure {
     assert(0);
 }
 
+bool isProtrude(Stone stoneRotated, int dx, int dy) pure {
+	for (int y; y < 8; y++) {
+		for (int x; x < 8; x++) {
+			if (!stoneRotated[y][x]) continue;
+			int absx = x + dx, absy = y + dy;
+			if (absx < 0 || absx > 31 || absy < 0 || absy > 31) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+Field putStoneOnField(Stone stoneRotated, int dx, int dy) pure {
+	Field output;
+	for (int y; y < 8; y++) {
+		for (int x; x < 8; x++) {
+			if (!stoneRotated[y][x]) continue;
+			output[y + dy][x + dx] = true;
+		}
+	}
+	return output;
+}
+
 
 
 unittest {
