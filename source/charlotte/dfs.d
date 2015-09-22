@@ -10,15 +10,18 @@ import std.traits :EnumMembers;
 import charlotte.answertypes;
 import charlotte.problemreader;
 import charlotte.problemtypes;
+import charlotte.stoneanalyzer;
 
 class DFS {
 	const Reader problem;
 	const void delegate(string[]) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
+	const StoneAnalyzed[] stoneInfo;
 
 	this(string problemName, void delegate(string[]) findAnswer) {
 		problem = new Reader(problemName);
 		findAnswerDelegate = findAnswer;
+		stoneInfo = problem.stone.map!analyze.array;
 	}
 
 	class Node {
@@ -51,6 +54,7 @@ class DFS {
 		while (nodeStack.length != 0) {
 			Node now = nodeStack.back;
 			nodeStack.popBack();
+			writeln(nodeStack.length, " ", now.depth);
 
 			if (now.depth >= stonesTotal) {
 				end(now.nowField, now.searchingAnswer);
@@ -67,6 +71,11 @@ class DFS {
 			);
 
 			foreach (Place p; allPlaceList) {
+				if ((stoneInfo[now.depth].skipFlip && p.flip) ||
+					(stoneInfo[now.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
+					(stoneInfo[now.depth].skipR180 && p.rotate == 2)) {
+					continue;
+				}
 				// 石を回転
 				Stone stoneRotated = problem.stone[now.depth].transform(p.flip, p.rotate);
 
