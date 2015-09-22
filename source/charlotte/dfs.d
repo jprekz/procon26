@@ -7,6 +7,7 @@ import std.algorithm;
 import std.typecons;
 import std.traits :EnumMembers;
 import std.parallelism;
+import std.datetime;
 
 import charlotte.answertypes;
 import charlotte.problemreader;
@@ -18,6 +19,7 @@ class DFS {
 	const void delegate(string[]) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
 	const StoneAnalyzed[] stoneInfo;
+	StopWatch sw;
 
 	this(string problemName, void delegate(string[]) findAnswer) {
 		problem = new Reader(problemName);
@@ -38,6 +40,7 @@ class DFS {
 	}
 
 	void start() {
+		sw.start();
 		search( new Node(
 			0,
 			problem.field,
@@ -55,7 +58,7 @@ class DFS {
 		while (nodeStack.length != 0) {
 			Node now = nodeStack.back;
 			nodeStack.popBack();
-			writeln(nodeStack.length, " ", now.depth);
+			//writeln(nodeStack.length, " ", now.depth);
 
 			if (now.depth >= stonesTotal) {
 				end(now.nowField, now.searchingAnswer);
@@ -70,7 +73,7 @@ class DFS {
 				now.first,
 				new Operation(now.searchingAnswer)
 			);
-			
+
 			Node[allPlaceList.length] results;
 			foreach (i, p; parallel(allPlaceList)) {
 				if ((stoneInfo[now.depth].skipFlip && p.flip) ||
@@ -114,6 +117,7 @@ class DFS {
 		bestScore = f.countEmptyCells;
 		f.toString.writeln;
 		bestScore.writeln;
+		writeln(sw.peek().msecs, "msec");
 		findAnswerDelegate(ans.getAnswer());
 	}
 }
