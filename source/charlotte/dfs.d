@@ -6,6 +6,7 @@ import std.range;
 import std.algorithm;
 import std.typecons;
 import std.traits :EnumMembers;
+import std.parallelism;
 
 import charlotte.answertypes;
 import charlotte.problemreader;
@@ -69,8 +70,9 @@ class DFS {
 				now.first,
 				new Operation(now.searchingAnswer)
 			);
-
-			foreach (Place p; allPlaceList) {
+			
+			Node[allPlaceList.length] results;
+			foreach (i, p; parallel(allPlaceList)) {
 				if ((stoneInfo[now.depth].skipFlip && p.flip) ||
 					(stoneInfo[now.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
 					(stoneInfo[now.depth].skipR180 && p.rotate == 2)) {
@@ -91,7 +93,7 @@ class DFS {
 					continue;
 				}
 
-				nodeStack ~= new Node(
+				results[i] = new Node(
 					now.depth + 1,
 					now.nowField | placedStone,
 					(now.first) ? placedStone.bordering
@@ -99,6 +101,9 @@ class DFS {
 					false,
 					new Operation(p, now.searchingAnswer)
 				);
+			}
+			foreach (result; results) {
+				if (!(result is null)) nodeStack ~= result;
 			}
 		}
 	}
