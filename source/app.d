@@ -9,13 +9,14 @@ import std.datetime;
 
 //import dfs.dfs;
 import charlotte.dfs;
+import charlotte.randombeam;
 
 void main(string[] args) {
-	DFS dfs = new DFS("./practice/quest1.txt", delegate void(ans) {
+	auto solver = new RandomBeam("./practice/quest1.txt", delegate void(ans) {
 		File outputFile = File("./output.txt", "w");
 		foreach (string s; ans) {
 			outputFile.writeln(s);
 		}
 	});
-	dfs.start();
+	solver.start();
 }
