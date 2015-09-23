@@ -8,6 +8,7 @@ import std.typecons;
 import std.traits :EnumMembers;
 import std.parallelism;
 import std.datetime;
+import std.conv;
 
 import charlotte.answertypes;
 import charlotte.problemreader;
@@ -53,7 +54,7 @@ class DFS {
 	Node[] nodeStack;
 	void search(Node firstNode) {
 		nodeStack ~= firstNode;
-		const int stonesTotal = problem.stone.length;
+		const int stonesTotal = problem.stone.length.to!int;
 
 		while (nodeStack.length != 0) {
 			Node now = nodeStack.back;

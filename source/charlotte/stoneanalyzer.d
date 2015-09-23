@@ -5,6 +5,7 @@ import std.array;
 import std.range;
 import std.algorithm;
 import std.typecons;
+import std.conv;
 
 import charlotte.answertypes;
 import charlotte.problemtypes;
@@ -22,8 +23,8 @@ struct StoneAnalyzed {
 StoneAnalyzed analyze(Stone s) {
     Stone normalized = s.normalize;
 
-    int height = normalized.dup.count!(a => a.reduce!("a||b"));
-    int width = normalized.transform(true, 3).dup.count!(a => a.reduce!("a||b"));
+    int height = normalized.dup.count!(a => a.reduce!("a||b")).to!int;
+    int width = normalized.transform(true, 3).dup.count!(a => a.reduce!("a||b")).to!int;
 
     int zuku = s.countCells;
     int neighbor = s.putStoneOnField(1, 1).bordering.countCells;
