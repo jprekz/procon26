@@ -1,5 +1,8 @@
 module charlotte.answertypes;
 
+import std.algorithm;
+import std.range;
+import std.traits :EnumMembers;
 import std.conv;
 
 class Operation {
@@ -42,6 +45,23 @@ struct Place {
 enum Rotation {
     deg0, deg90, deg180, deg270
 }
+
+Place[] calcAllPlaceList() pure {
+    Place[] ls;
+    foreach (bool f; [true, false]) {
+        foreach (Rotation r; [EnumMembers!Rotation]) {
+            foreach (int x; iota(-7, 39)) {
+                foreach (int y; iota(-7, 39)) {
+                    ls ~= Place(f, r, x, y);
+                }
+            }
+        }
+    }
+	ls.reverse();
+    return ls;
+}
+
+
 
 unittest {
     auto p = Place(true, Rotation.deg0, 1, 2);

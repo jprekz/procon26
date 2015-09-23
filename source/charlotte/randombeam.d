@@ -5,7 +5,6 @@ import std.string;
 import std.range;
 import std.algorithm;
 import std.typecons;
-import std.traits :EnumMembers;
 import std.parallelism;
 import std.datetime;
 import std.conv;
@@ -125,19 +124,4 @@ class RandomBeam {
 		writeln(sw.peek().msecs, "msec");
 		findAnswerDelegate(ans.getAnswer());
 	}
-}
-
-Place[] calcAllPlaceList() pure {
-    Place[] ls;
-    foreach (bool f; [true, false]) {
-        foreach (Rotation r; [EnumMembers!Rotation]) {
-            foreach (int x; iota(-7, 39)) {
-                foreach (int y; iota(-7, 39)) {
-                    ls ~= Place(f, r, x, y);
-                }
-            }
-        }
-    }
-	ls.reverse();
-    return ls;
 }

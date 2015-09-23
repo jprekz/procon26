@@ -122,18 +122,3 @@ class DFS {
 		findAnswerDelegate(ans.getAnswer());
 	}
 }
-
-Place[] calcAllPlaceList() pure {
-    Place[] ls;
-    foreach (bool f; [true, false]) {
-        foreach (Rotation r; [EnumMembers!Rotation]) {
-            foreach (int x; iota(-7, 39)) {
-                foreach (int y; iota(-7, 39)) {
-                    ls ~= Place(f, r, x, y);
-                }
-            }
-        }
-    }
-	ls.reverse();
-    return ls;
-}
