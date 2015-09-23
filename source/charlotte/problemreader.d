@@ -4,7 +4,6 @@ import std.conv;
 import std.stdio;
 import std.string;
 
-import charlotte.answertypes;
 import charlotte.problemtypes;
 
 class Reader {
