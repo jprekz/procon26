@@ -5,7 +5,6 @@ import std.string;
 import std.range;
 import std.algorithm;
 import std.typecons;
-import std.traits :EnumMembers;
 import std.parallelism;
 import std.datetime;
 import std.conv;
