@@ -9,10 +9,10 @@ import std.datetime;
 
 //import dfs.dfs;
 import charlotte.dfs;
-import charlotte.randombeam;
+import charlotte.mc;
 
 void main(string[] args) {
-	auto solver = new RandomBeam("./practice/quest1.txt", delegate void(ans) {
+	auto solver = new MC("./practice/quest1.txt", delegate void(ans) {
 		File outputFile = File("./output.txt", "w");
 		foreach (string s; ans) {
 			outputFile.writeln(s);

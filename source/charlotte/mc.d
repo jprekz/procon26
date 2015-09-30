@@ -1,4 +1,4 @@
-module charlotte.randombeam;
+module charlotte.mc;
 
 import std.stdio;
 import std.string;
@@ -16,7 +16,7 @@ import charlotte.problemreader;
 import charlotte.problemtypes;
 import charlotte.stoneanalyzer;
 
-class RandomBeam {
+class MC {
 	const Reader problem;
 	const void delegate(string[]) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
