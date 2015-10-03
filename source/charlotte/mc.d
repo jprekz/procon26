@@ -85,8 +85,8 @@ class MC {
 				Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
 
 				// 石が置ける位置にあるか
-				if ((placedStone & now.nowField) != Field.init ||
-					(placedStone & now.placeableMap) == Field.init) {
+				if ((placedStone.isWrap(now.nowField)) ||
+					!(placedStone.isWrap(now.placeableMap))) {
 					continue;
 				}
 
