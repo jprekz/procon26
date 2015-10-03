@@ -102,7 +102,7 @@ class MCTS {
 			assert (expanded);
 			auto totalVisits = visits;
 			auto values = childNodes.map!((n) {
-				const c = 0.01;
+				const c = 0.1;
 				return n.score + c * sqrt(log(totalVisits) / n.visits).to!double;
 			}).array;
 			int index = 0; double max = 0.0;
@@ -115,7 +115,7 @@ class MCTS {
 			return childNodes[index];
 		}
 		bool isExpandedCond() {
-			return visits >= 2;
+			return visits >= 4;
 		}
 		void updateUpwards(int scoreUpdate) {
 			double normalizedScore = 1.0 - scoreUpdate.to!double / fieldCells;
