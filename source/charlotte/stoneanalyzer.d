@@ -20,6 +20,10 @@ struct StoneAnalyzed {
     bool skipR90;
 }
 
+StoneAnalyzed[] analyzeAll(const Stone[] ss) {
+    return ss.map!analyze.array;
+}
+
 StoneAnalyzed analyze(Stone s) {
     Stone normalized = s.normalize;
 

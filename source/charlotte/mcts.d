@@ -23,13 +23,17 @@ class MCTS {
     const Place[] allPlaceList = calcAllPlaceList;
 	const StoneAnalyzed[] stoneInfo;
 	const int fieldCells;
+	const int stonesTotal;
 	StopWatch sw;
 
 	this(string problemName, void delegate(string[], int) findAnswer) {
 		problem = new Reader(problemName);
 		findAnswerDelegate = findAnswer;
-		stoneInfo = problem.stone.map!analyze.array;
+		sw.start();
+		stoneInfo = problem.stone.analyzeAll;
+		writeln(sw.peek().msecs,"msec");
 		fieldCells = problem.field.countEmptyCells;
+		stonesTotal = problem.stone.length.to!int;
 	}
 
 	class Node {
@@ -115,6 +119,7 @@ class MCTS {
 			return childNodes[index];
 		}
 		bool isExpandedCond() {
+			if (node.depth >= stonesTotal - 1) return false;
 			return visits >= 4;
 		}
 		void updateUpwards(int scoreUpdate) {
@@ -126,7 +131,6 @@ class MCTS {
 	}
 
 	void start() {
-		sw.start();
 		MCTNode root = new MCTNode(new Node( 0,
 			problem.field,
 			problem.field.inv,
@@ -161,8 +165,6 @@ class MCTS {
 			firstNode.first,
 			firstNode.searchingAnswer
 		);
-		const int stonesTotal = problem.stone.length.to!int;
-
 		while (true) {
 			if (now.depth >= stonesTotal) {
 				end(now.nowField, now.searchingAnswer);
@@ -214,7 +216,7 @@ class MCTS {
 		int score = f.countEmptyCells;
 		if (bestScore <= score) return;
 		bestScore = score;
-		f.toString.writeln;
+		writeln(f.toString, score);
 		findAnswerDelegate(ans.getAnswer(), score);
 	}
 }
