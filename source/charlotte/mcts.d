@@ -220,3 +220,27 @@ class MCTS {
 		findAnswerDelegate(ans.getAnswer(), score);
 	}
 }
+
+
+
+class MC : MCTS {
+	this(string problemName, void delegate(string[], int) findAnswer) {
+		super(problemName, findAnswer);
+	}
+
+	override void start() {
+		foreach (i; parallel(iota(threadsPerCPU), 1)) {
+			int[] rndOrder = iota(allPlaceList.length).map!("a.to!int").array;
+			while (true) {
+				int score = playout( new Node( 0,
+					problem.field,
+					problem.field.inv,
+					true,
+					null
+				), rndOrder);
+				writeln(score,",\t",sw.peek().msecs,"msec");
+				rndOrder.randomShuffle;
+			}
+		}
+	}
+}
