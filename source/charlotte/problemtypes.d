@@ -19,12 +19,10 @@ struct Map(int x, int y) {
 
     typeof(this) opBinary(string op)(typeof(this) rhs) const {
         static if (op == "&" || op == "|" || op == "^") {
-            bool[y][x] l = _map;
-            bool[y][x] r = rhs._map;
             bool[y][x] res;
             for (int i; i < y; i++) {
                 for (int j; j < x; j++) {
-                    res[i][j] = mixin("l[i][j]"~op~"r[i][j]");
+                    res[i][j] = mixin("_map[i][j]"~op~"rhs._map[i][j]");
                 }
             }
             return typeof(this)(res);
@@ -51,6 +49,15 @@ struct Map(int x, int y) {
     		}
     	}
     	return output;
+    }
+
+    bool isWrap(typeof(this) rhs) {
+        for (int i; i < y; i++) {
+            for (int j; j < x; j++) {
+                if (_map[i][j] && rhs._map[i][j]) return true;
+            }
+        }
+        return false;
     }
 
     typeof(this) bordering() const {
