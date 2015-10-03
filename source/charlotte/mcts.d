@@ -19,13 +19,13 @@ import charlotte.stoneanalyzer;
 
 class MCTS {
 	const Reader problem;
-	const void delegate(string[]) findAnswerDelegate;
+	const void delegate(string[], int) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
 	const StoneAnalyzed[] stoneInfo;
 	const int fieldCells;
 	StopWatch sw;
 
-	this(string problemName, void delegate(string[]) findAnswer) {
+	this(string problemName, void delegate(string[], int) findAnswer) {
 		problem = new Reader(problemName);
 		findAnswerDelegate = findAnswer;
 		stoneInfo = problem.stone.map!analyze.array;
@@ -211,11 +211,10 @@ class MCTS {
 
 	int bestScore = 1024;
 	void end(Field f, Operation ans) {
-		if (bestScore <= f.countEmptyCells) return;
-		bestScore = f.countEmptyCells;
+		int score = f.countEmptyCells;
+		if (bestScore <= score) return;
+		bestScore = score;
 		f.toString.writeln;
-		bestScore.writeln;
-		writeln(sw.peek().msecs, "msec");
-		findAnswerDelegate(ans.getAnswer());
+		findAnswerDelegate(ans.getAnswer(), score);
 	}
 }
