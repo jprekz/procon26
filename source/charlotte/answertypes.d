@@ -42,7 +42,7 @@ struct Place {
     int y;
 }
 
-enum Rotation {
+enum Rotation: byte {
     deg0, deg90, deg180, deg270
 }
 
