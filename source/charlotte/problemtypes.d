@@ -17,7 +17,7 @@ struct Map(int x, int y) {
         return typeof(this)(res);
     }
 
-    typeof(this) opBinary(string op)(typeof(this) rhs) {
+    typeof(this) opBinary(string op)(typeof(this) rhs) const {
         static if (op == "&" || op == "|" || op == "^") {
             bool[y][x] l = _map;
             bool[y][x] r = rhs._map;
@@ -33,7 +33,7 @@ struct Map(int x, int y) {
         }
     }
 
-    int countCells() pure {
+    int countCells() const {
     	int output;
     	for (int i; i < y; i++) {
     		for (int j; j < x; j++) {
@@ -43,7 +43,7 @@ struct Map(int x, int y) {
     	return output;
     }
 
-    int countEmptyCells() pure {
+    int countEmptyCells() const {
     	int output;
     	for (int i; i < y; i++) {
     		for (int j; j < x; j++) {
