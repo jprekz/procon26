@@ -54,8 +54,8 @@ class MCTS {
         }
     }
 
-    void findNext(alias n, alias range, alias first, alias findNode)() {
-        foreach (p; range) {
+    void findNext(alias n, alias pRange, alias first, alias findNode)() {
+        foreach (p; pRange) {
             if ((stoneInfo[n.depth].skipFlip && p.flip) ||
                 (stoneInfo[n.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
                 (stoneInfo[n.depth].skipR180 && p.rotate == 2)) {
@@ -177,7 +177,8 @@ class MCTS {
                 end(now.nowField, now.searchingAnswer);
                 return now.nowField.countEmptyCells;
             }
-            mixin findNext!(now, allPlaceList, true, delegate (n){ now = n; });
+            auto rndPlaceList = rndOrder.map!(a => allPlaceList[a]);
+            mixin findNext!(now, rndPlaceList, true, delegate (n){ now = n; });
             findNext();
         }
     }
