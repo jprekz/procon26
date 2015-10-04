@@ -57,8 +57,8 @@ class MCTS {
 				Stone stoneRotated = problem.stone[depth].transform(p.flip, p.rotate);
 				if (stoneRotated.isProtrude(p.x, p.y)) continue;
 				Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
-				if ((placedStone & nowField) != Field.init ||
-					(placedStone & placeableMap) == Field.init) {
+				if ((placedStone.isWrap(nowField)) ||
+					!(placedStone.isWrap(placeableMap))) {
 					continue;
 				}
 				ls ~= new Node(
@@ -157,22 +157,14 @@ class MCTS {
 	}
 
 	int playout(Node firstNode, ref const int[] rndOrder) {
-		Node now = new Node(
-			firstNode.depth,
-			firstNode.nowField,
-			firstNode.placeableMap,
-			firstNode.first,
-			firstNode.searchingAnswer
-		);
-		while (true) {
+		Node now = firstNode;
+		loop: while (true) {
 			if (now.depth >= stonesTotal) {
 				end(now.nowField, now.searchingAnswer);
 				return now.nowField.countEmptyCells;
 			}
 
-			bool flag = true;
-			foreach (i; rndOrder) {
-				Place p = allPlaceList[i];
+			foreach (p; rndOrder.map!(i => allPlaceList[i])) {
 				if ((stoneInfo[now.depth].skipFlip && p.flip) ||
 					(stoneInfo[now.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
 					(stoneInfo[now.depth].skipR180 && p.rotate == 2)) {
@@ -193,21 +185,26 @@ class MCTS {
 					continue;
 				}
 
-				now.depth ++;
-				now.nowField = now.nowField | placedStone;
-				now.placeableMap = (now.first) ? placedStone.bordering
-					: (now.placeableMap | placedStone.bordering);
-				now.first = false;
-				now.searchingAnswer = new Operation(p, now.searchingAnswer);
-				flag = false;
-				break;
+				now = new Node(
+					now.depth + 1,
+					now.nowField | placedStone,
+					(now.first) ? placedStone.bordering
+						: (now.placeableMap | placedStone.bordering),
+					false,
+					new Operation(p, now.searchingAnswer)
+				);
+				continue loop;
 			}
 
-			if (flag) {
-				now.depth ++;
-				now.searchingAnswer = new Operation(now.searchingAnswer);
-			}
+			now = new Node(
+				now.depth + 1,
+				now.nowField,
+				now.placeableMap,
+				now.first,
+				new Operation(now.searchingAnswer)
+			);
 		}
+		assert(0);
 	}
 
 	int bestScore = 1024;
