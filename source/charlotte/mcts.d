@@ -48,37 +48,51 @@ class MCTS {
 		}
 		Node[] calcChildNodes() {
 			Node[] ls;
-			foreach (p; allPlaceList) {
-				if ((stoneInfo[depth].skipFlip && p.flip) ||
-					(stoneInfo[depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
-					(stoneInfo[depth].skipR180 && p.rotate == 2)) {
-					continue;
-				}
-				Stone stoneRotated = problem.stone[depth].transform(p.flip, p.rotate);
-				if (stoneRotated.isProtrude(p.x, p.y)) continue;
-				Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
-				if ((placedStone.isWrap(nowField)) ||
-					!(placedStone.isWrap(placeableMap))) {
-					continue;
-				}
-				ls ~= new Node(
-					depth + 1,
-					nowField | placedStone,
-					(first) ? placedStone.bordering
-						: (placeableMap | placedStone.bordering),
-					false,
-					new Operation(p, searchingAnswer)
-				);
-			}
-			ls ~= new Node(
-				depth + 1,
-				nowField,
-				placeableMap,
-				first,
-				new Operation(searchingAnswer)
-			);
+			mixin findNext!(this, allPlaceList, false, delegate (n){ ls ~= n; });
+			findNext();
 			return ls;
 		}
+	}
+
+	void findNext(alias n, alias range, alias first, alias findNode)() {
+		foreach (p; range) {
+			if ((stoneInfo[n.depth].skipFlip && p.flip) ||
+				(stoneInfo[n.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
+				(stoneInfo[n.depth].skipR180 && p.rotate == 2)) {
+				continue;
+			}
+			// 石を回転
+			Stone stoneRotated = problem.stone[n.depth].transform(p.flip, p.rotate);
+
+			// 石がフィールド外にはみ出さないか
+			if (stoneRotated.isProtrude(p.x, p.y)) continue;
+
+			// 石をField座標に配置
+			Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
+
+			// 石が置ける位置にあるか
+			if ((placedStone.isWrap(n.nowField)) ||
+				!(placedStone.isWrap(n.placeableMap))) {
+				continue;
+			}
+
+			findNode(new Node(
+				n.depth + 1,
+				n.nowField | placedStone,
+				(n.first) ? placedStone.bordering
+					: (n.placeableMap | placedStone.bordering),
+				false,
+				new Operation(p, n.searchingAnswer)
+			));
+			static if (first) return;
+		}
+		findNode(new Node(
+			n.depth + 1,
+			n.nowField,
+			n.placeableMap,
+			n.first,
+			new Operation(n.searchingAnswer)
+		));
 	}
 
 	class MCTNode {
@@ -163,46 +177,8 @@ class MCTS {
 				end(now.nowField, now.searchingAnswer);
 				return now.nowField.countEmptyCells;
 			}
-
-			foreach (p; rndOrder.map!(i => allPlaceList[i])) {
-				if ((stoneInfo[now.depth].skipFlip && p.flip) ||
-					(stoneInfo[now.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
-					(stoneInfo[now.depth].skipR180 && p.rotate == 2)) {
-					continue;
-				}
-				// 石を回転
-				Stone stoneRotated = problem.stone[now.depth].transform(p.flip, p.rotate);
-
-				// 石がフィールド外にはみ出さないか
-				if (stoneRotated.isProtrude(p.x, p.y)) continue;
-
-				// 石をField座標に配置
-				Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
-
-				// 石が置ける位置にあるか
-				if ((placedStone.isWrap(now.nowField)) ||
-					!(placedStone.isWrap(now.placeableMap))) {
-					continue;
-				}
-
-				now = new Node(
-					now.depth + 1,
-					now.nowField | placedStone,
-					(now.first) ? placedStone.bordering
-						: (now.placeableMap | placedStone.bordering),
-					false,
-					new Operation(p, now.searchingAnswer)
-				);
-				continue loop;
-			}
-
-			now = new Node(
-				now.depth + 1,
-				now.nowField,
-				now.placeableMap,
-				now.first,
-				new Operation(now.searchingAnswer)
-			);
+			mixin findNext!(now, allPlaceList, true, delegate (n){ now = n; });
+			findNext();
 		}
 		assert(0);
 	}
