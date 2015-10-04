@@ -14,7 +14,7 @@ import charlotte.mcts;
 void main(string[] args) {
 	write("input problem num: ");
 	string num = readln.chomp;
-	auto solver = new MC("./practice/quest"~num~".txt", delegate void(ans, score) {
+	auto solver = new MCTS("./practice/quest"~num~".txt", delegate void(ans, score) {
 		File outputFile = File("./answer/output"~num~"-"~score.to!string~".txt", "w");
 		foreach (string s; ans) {
 			outputFile.writeln(s);

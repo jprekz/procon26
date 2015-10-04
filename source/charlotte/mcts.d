@@ -70,7 +70,6 @@ class MCTS {
 					new Operation(p, searchingAnswer)
 				);
 			}
-			ls.randomShuffle;
 			ls ~= new Node(
 				depth + 1,
 				nowField,
