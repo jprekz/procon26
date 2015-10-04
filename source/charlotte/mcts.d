@@ -172,7 +172,7 @@ class MCTS {
 
     int playout(Node firstNode, ref const int[] rndOrder) {
         Node now = firstNode;
-        loop: while (true) {
+        while (true) {
             if (now.depth >= stonesTotal) {
                 end(now.nowField, now.searchingAnswer);
                 return now.nowField.countEmptyCells;
@@ -180,7 +180,6 @@ class MCTS {
             mixin findNext!(now, allPlaceList, true, delegate (n){ now = n; });
             findNext();
         }
-        assert(0);
     }
 
     int bestScore = 1024;
