@@ -10,6 +10,26 @@ import std.conv;
 import charlotte.answertypes;
 import charlotte.problemtypes;
 
+class Analyzer {
+    const Problem problem;
+    StoneAnalyzed[] stone;
+    FieldAnalyzed field;
+
+    this(const Problem p) {
+        problem = p;
+    }
+
+    auto calcStone() {
+        stone = problem.stone.map!analyzeStone.array;
+        return this;
+    }
+
+    auto calcField() {
+        field = FieldAnalyzed(1);
+        return this;
+    }
+}
+
 struct StoneAnalyzed {
     int width;
     int height;
@@ -18,13 +38,18 @@ struct StoneAnalyzed {
     bool skipFlip;
     bool skipR180;
     bool skipR90;
+    bool isSkip(Place p) const {
+        if ((skipFlip && p.flip) ||
+            (skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
+            (skipR180 && p.rotate == 2)) {
+            return true;
+        }
+        return false;
+    }
 }
+struct FieldAnalyzed {int dummy;}
 
-StoneAnalyzed[] analyzeAll(const Stone[] ss) {
-    return ss.map!analyze.array;
-}
-
-StoneAnalyzed analyze(Stone s) {
+StoneAnalyzed analyzeStone(Stone s) {
     Stone normalized = s.normalize;
 
     int height = normalized.dup.count!(a => a.reduce!("a||b")).to!int;
@@ -78,7 +103,7 @@ unittest {
         [0,0,0,0,1,1,0,0],
         [0,0,0,0,0,0,0,0]
     ]);
-    assert(s.analyze == StoneAnalyzed(5, 5, 15, 21, false, false, false));
+    assert(s.analyzeStone == StoneAnalyzed(5, 5, 15, 21, false, false, false));
     Stone d = Stone([
         [0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0],
@@ -89,5 +114,5 @@ unittest {
         [0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0]
     ]);
-    assert(d.analyze == StoneAnalyzed(4, 4, 8, 12, false, true, true));
+    assert(d.analyzeStone == StoneAnalyzed(4, 4, 8, 12, false, true, true));
 }

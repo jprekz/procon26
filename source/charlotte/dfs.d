@@ -15,15 +15,15 @@ import charlotte.stoneanalyzer;
 
 class DFS {
 	const Problem problem;
-	const void delegate(string[]) findAnswerDelegate;
+    const void delegate(string[], int) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
-	const StoneAnalyzed[] stoneInfo;
+    const Analyzer analyzed;
 	StopWatch sw;
 
-	this(string problemName, void delegate(string[]) findAnswer) {
+	this(string problemName, void delegate(string[], int) findAnswer) {
 		problem = problemRead(problemName);
 		findAnswerDelegate = findAnswer;
-		stoneInfo = problem.stone.map!analyze.array;
+        analyzed = new Analyzer(problem).calcStone;
 	}
 
 	class Node {
@@ -75,11 +75,8 @@ class DFS {
 
 			Node[allPlaceList.length] results;
 			foreach (i, p; parallel(allPlaceList)) {
-				if ((stoneInfo[now.depth].skipFlip && p.flip) ||
-					(stoneInfo[now.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
-					(stoneInfo[now.depth].skipR180 && p.rotate == 2)) {
-					continue;
-				}
+            	if (analyzed.stone[now.depth].isSkip(p)) continue;
+				
 				// 石を回転
 				Stone stoneRotated = problem.stone[now.depth].transform(p.flip, p.rotate);
 
@@ -112,11 +109,10 @@ class DFS {
 
 	int bestScore = 1024;
 	void end(Field f, Operation ans) {
-		if (bestScore <= f.countEmptyCells) return;
-		bestScore = f.countEmptyCells;
-		f.toString.writeln;
-		bestScore.writeln;
-		writeln(sw.peek().msecs, "msec");
-		findAnswerDelegate(ans.getAnswer());
+        int score = f.countEmptyCells;
+        if (bestScore <= score) return;
+        bestScore = score;
+        writeln(f.toString, score);
+        findAnswerDelegate(ans.getAnswer(), score);
 	}
 }

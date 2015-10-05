@@ -20,7 +20,7 @@ class MCTS {
     const Problem problem;
     const void delegate(string[], int) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
-    const StoneAnalyzed[] stoneInfo;
+    const Analyzer analyzed;
     const int fieldCells;
     const int stonesTotal;
     StopWatch sw;
@@ -29,10 +29,11 @@ class MCTS {
         sw.start();
 		problem = problemRead(problemName);
         findAnswerDelegate = findAnswer;
-        stoneInfo = problem.stone.analyzeAll;
+        analyzed = new Analyzer(problem).calcStone;
         writeln(sw.peek().msecs,"msec");
         fieldCells = problem.field.countEmptyCells;
         stonesTotal = problem.stone.length.to!int;
+
     }
 
     class Node {
@@ -55,11 +56,8 @@ class MCTS {
 
     void findNext(alias n, alias pRange, bool first, alias findNode)() {
         foreach (p; pRange) {
-            if ((stoneInfo[n.depth].skipFlip && p.flip) ||
-                (stoneInfo[n.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
-                (stoneInfo[n.depth].skipR180 && p.rotate == 2)) {
-                continue;
-            }
+            if (analyzed.stone[n.depth].isSkip(p)) continue;
+
             // 石を回転
             Stone stoneRotated = problem.stone[n.depth].transform(p.flip, p.rotate);
 
