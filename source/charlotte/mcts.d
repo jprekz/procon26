@@ -18,7 +18,7 @@ import charlotte.problemtypes;
 import charlotte.stoneanalyzer;
 
 class MCTS {
-    const Reader problem;
+    const Problem problem;
     const void delegate(string[], int) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
     const StoneAnalyzed[] stoneInfo;
@@ -27,9 +27,9 @@ class MCTS {
     StopWatch sw;
 
     this(string problemName, void delegate(string[], int) findAnswer) {
-        problem = new Reader(problemName);
-        findAnswerDelegate = findAnswer;
         sw.start();
+		problem = problemRead(problemName);
+        findAnswerDelegate = findAnswer;
         stoneInfo = problem.stone.analyzeAll;
         writeln(sw.peek().msecs,"msec");
         fieldCells = problem.field.countEmptyCells;

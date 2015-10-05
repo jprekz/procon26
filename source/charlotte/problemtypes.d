@@ -3,6 +3,15 @@ module charlotte.problemtypes;
 alias Map!(8, 8) Stone;
 alias Map!(32, 32) Field;
 
+class Problem {
+	immutable Stone[] stone;
+	immutable Field field;
+    this(immutable Stone[] s, immutable Field f) {
+        stone = s;
+        field = f;
+    }
+}
+
 struct Map(int x, int y) {
     bool[y][x] _map;
     alias _map this;

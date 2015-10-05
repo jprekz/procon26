@@ -15,14 +15,14 @@ import charlotte.problemtypes;
 import charlotte.stoneanalyzer;
 
 class DFS {
-	const Reader problem;
+	const Problem problem;
 	const void delegate(string[]) findAnswerDelegate;
     const Place[] allPlaceList = calcAllPlaceList;
 	const StoneAnalyzed[] stoneInfo;
 	StopWatch sw;
 
 	this(string problemName, void delegate(string[]) findAnswer) {
-		problem = new Reader(problemName);
+		problem = problemRead(problemName);
 		findAnswerDelegate = findAnswer;
 		stoneInfo = problem.stone.map!analyze.array;
 	}
