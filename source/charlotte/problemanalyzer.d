@@ -20,12 +20,12 @@ class Analyzer {
     }
 
     auto calcStone() {
-        stone = problem.stone.map!analyzeStone.array;
+        stone = problem.stone.map!(a => StoneAnalyzed(a)).array;
         return this;
     }
 
     auto calcField() {
-        field = FieldAnalyzed(1);
+        field = FieldAnalyzed(problem.field);
         return this;
     }
 }
@@ -38,6 +38,7 @@ struct StoneAnalyzed {
     bool skipFlip;
     bool skipR180;
     bool skipR90;
+    
     bool isSkip(Place p) const {
         if ((skipFlip && p.flip) ||
             (skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
@@ -46,37 +47,34 @@ struct StoneAnalyzed {
         }
         return false;
     }
-}
-struct FieldAnalyzed {int dummy;}
 
-StoneAnalyzed analyzeStone(Stone s) {
-    Stone normalized = s.normalize;
+    this(int w, int h, int z, int n, bool f, bool a, bool b) {
+        width = w; height = h; zuku = z; neighbor = n;
+        skipFlip = f; skipR180 = a; skipR90 = b;
+    }
+    this(Stone s) {
+        Stone normalized = s.normalize;
 
-    int height = normalized.dup.count!(a => a.reduce!("a||b")).to!int;
-    int width = normalized.transform(true, 3).dup.count!(a => a.reduce!("a||b")).to!int;
+        height = normalized.dup.count!(a => a.reduce!("a||b")).to!int;
+        width = normalized.transform(true, 3).dup.count!(a => a.reduce!("a||b")).to!int;
+        zuku = s.countCells;
+        neighbor = s.putStoneOnField(1, 1).bordering.countCells;
 
-    int zuku = s.countCells;
-    int neighbor = s.putStoneOnField(1, 1).bordering.countCells;
-
-    bool skipFlip = false;
-    for (int i; i < 4; i++) {
-        if (normalized == normalized.transform(true, i).normalize) {
-            skipFlip = true;
+        skipFlip = false;
+        for (int i; i < 4; i++) {
+            if (normalized == normalized.transform(true, i).normalize) {
+                skipFlip = true;
+            }
+        }
+        skipR90 = false;
+        skipR180 = false;
+        if (normalized == normalized.transform(false, 1).normalize) {
+            skipR90 = true;
+            skipR180 = true;
+        } else if (normalized == normalized.transform(false, 2).normalize) {
+            skipR180 = true;
         }
     }
-    bool skipR90 = false;
-    bool skipR180 = false;
-    if (normalized == normalized.transform(false, 1).normalize) {
-        skipR90 = true;
-        skipR180 = true;
-    } else if (normalized == normalized.transform(false, 2).normalize) {
-        skipR180 = true;
-    }
-
-    return StoneAnalyzed(
-        width, height, zuku, neighbor,
-        skipFlip, skipR180, skipR90
-    );
 }
 
 Stone normalize(Stone s) {
@@ -88,6 +86,12 @@ Stone normalize(Stone s) {
         normalized = normalized.transform(true, 3);
     }
     return normalized;
+}
+
+struct FieldAnalyzed {
+    this(Field f) {
+        // TODO
+    }
 }
 
 
@@ -103,7 +107,7 @@ unittest {
         [0,0,0,0,1,1,0,0],
         [0,0,0,0,0,0,0,0]
     ]);
-    assert(s.analyzeStone == StoneAnalyzed(5, 5, 15, 21, false, false, false));
+    assert(StoneAnalyzed(s) == StoneAnalyzed(5, 5, 15, 21, false, false, false));
     Stone d = Stone([
         [0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0],
@@ -114,5 +118,5 @@ unittest {
         [0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0]
     ]);
-    assert(d.analyzeStone == StoneAnalyzed(4, 4, 8, 12, false, true, true));
+    assert(StoneAnalyzed(d) == StoneAnalyzed(4, 4, 8, 12, false, true, true));
 }
