@@ -11,7 +11,7 @@ import std.conv;
 import charlotte.answertypes;
 import charlotte.problemreader;
 import charlotte.problemtypes;
-import charlotte.stoneanalyzer;
+import charlotte.problemanalyzer;
 
 class DFS {
 	const Problem problem;
@@ -76,7 +76,7 @@ class DFS {
 			Node[allPlaceList.length] results;
 			foreach (i, p; parallel(allPlaceList)) {
             	if (analyzed.stone[now.depth].isSkip(p)) continue;
-				
+
 				// 石を回転
 				Stone stoneRotated = problem.stone[now.depth].transform(p.flip, p.rotate);
 

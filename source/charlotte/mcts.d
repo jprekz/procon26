@@ -14,7 +14,7 @@ import core.cpuid;
 import charlotte.answertypes;
 import charlotte.problemreader;
 import charlotte.problemtypes;
-import charlotte.stoneanalyzer;
+import charlotte.problemanalyzer;
 
 class MCTS {
     const Problem problem;

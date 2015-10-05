@@ -1,4 +1,4 @@
-module charlotte.stoneanalyzer;
+module charlotte.problemanalyzer;
 
 import std.stdio;
 import std.array;
