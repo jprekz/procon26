@@ -53,7 +53,7 @@ class MCTS {
         }
     }
 
-    void findNext(alias n, alias pRange, alias first, alias findNode)() {
+    void findNext(alias n, alias pRange, bool first, alias findNode)() {
         foreach (p; pRange) {
             if ((stoneInfo[n.depth].skipFlip && p.flip) ||
                 (stoneInfo[n.depth].skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
