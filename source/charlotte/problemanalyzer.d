@@ -6,6 +6,7 @@ import std.range;
 import std.algorithm;
 import std.typecons;
 import std.conv;
+import std.parallelism;
 
 import charlotte.answertypes;
 import charlotte.problemtypes;
@@ -13,20 +14,35 @@ import charlotte.problemtypes;
 class Analyzer {
     const Problem problem;
     StoneAnalyzed[] stone;
-    FieldAnalyzed field;
+    Place[][] places;
 
-    this(const Problem p) {
+    public this(const Problem p) {
         problem = p;
     }
 
-    auto calcStone() {
+    public auto calcStone() {
         stone = problem.stone.map!(a => StoneAnalyzed(a)).array;
         return this;
     }
 
-    auto calcField() {
-        field = FieldAnalyzed(problem.field);
+    public auto calcAllPlace() {
+        places = zip(problem.stone, stone).map!(a => calcAllPlaceByStone(a.expand)).array;
         return this;
+    }
+
+    private Place[] calcAllPlaceByStone(Stone s, StoneAnalyzed a) {
+        Place[] ls = new Place[allPlaceList.length];
+        bool[] f = new bool[allPlaceList.length];
+        foreach (i, p; parallel(allPlaceList)) {
+            if (a.isSkip(p)) continue;
+            Stone stoneRotated = s.transform(p.flip, p.rotate);
+            if (stoneRotated.isProtrude(p.x, p.y)) continue;
+            Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
+            if (placedStone.isWrap(problem.field)) continue;
+            ls[i] = p;
+            f[i] = true;
+        }
+        return zip(ls, f).filter!(a => a[1]).map!(a => a[0]).array;
     }
 }
 
@@ -87,12 +103,6 @@ Stone normalize(Stone s) {
         normalized = normalized.transform(true, 3);
     }
     return normalized;
-}
-
-struct FieldAnalyzed {
-    this(Field f) {
-        // TODO
-    }
 }
 
 

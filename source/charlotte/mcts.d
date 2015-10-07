@@ -28,11 +28,10 @@ class MCTS {
         sw.start();
 		problem = problemRead(problemName);
         findAnswerDelegate = findAnswer;
-        analyzed = new Analyzer(problem).calcStone;
+        analyzed = new Analyzer(problem).calcStone.calcAllPlace;
         writeln(sw.peek().msecs,"msec");
         fieldCells = problem.field.countEmptyCells;
         stonesTotal = problem.stone.length.to!int;
-
     }
 
     class Node {
@@ -148,7 +147,7 @@ class MCTS {
         ), null);
         root.expand;
         foreach (i; parallel(iota(threadsPerCPU), 1)) {
-            int[] rndOrder = iota(allPlaceList.length).map!("a.to!int").array;
+            Place[][] placesShuffle = analyzed.places.map!dup.array;
             while (true) {
                 MCTNode now = root;
                 while (now.expanded) now = now.selectNext;
@@ -157,23 +156,23 @@ class MCTS {
                     now = now.childNodes[0];
                 }
                 now.visits++;
-                int score = playout(now.node, rndOrder);
+                int score = playout(now.node, placesShuffle);
                 now.visits--;
                 writeln(now.node.depth,",\t",score,",\t",sw.peek().msecs,"msec");
                 now.updateUpwards(score);
-                rndOrder.randomShuffle;
             }
         }
     }
 
-    int playout(Node firstNode, ref const int[] rndOrder) {
+    int playout(Node firstNode, Place[][] places) {
         Node now = firstNode;
         while (true) {
             if (now.depth >= stonesTotal) {
                 end(now.nowField, now.searchingAnswer);
                 return now.nowField.countEmptyCells;
             }
-            auto rndPlaceList = rndOrder.map!(a => allPlaceList[a]);
+            Place[] rndPlaceList = places[now.depth];
+            rndPlaceList.randomShuffle;
             mixin findNext!(now, rndPlaceList, true, delegate (n){ now = n; });
             findNext();
         }
@@ -198,16 +197,15 @@ class MC : MCTS {
 
     override void start() {
         foreach (i; parallel(iota(threadsPerCPU), 1)) {
-            int[] rndOrder = iota(allPlaceList.length).map!("a.to!int").array;
+            Place[][] placesShuffle = analyzed.places.map!dup.array;
             while (true) {
                 int score = playout( new Node( 0,
                     problem.field,
                     problem.field.inv,
                     true,
                     null
-                ), rndOrder);
+                ), placesShuffle);
                 writeln(score,",\t",sw.peek().msecs,"msec");
-                rndOrder.randomShuffle;
             }
         }
     }
