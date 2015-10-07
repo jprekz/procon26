@@ -46,6 +46,7 @@ enum Rotation: byte {
     deg0, deg90, deg180, deg270
 }
 
+const Place[] allPlaceList = calcAllPlaceList;
 Place[] calcAllPlaceList() pure {
     Place[] ls;
     foreach (bool f; [true, false]) {

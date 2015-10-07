@@ -16,7 +16,6 @@ import charlotte.problemanalyzer;
 class DFS {
 	const Problem problem;
     const void delegate(string[], int) findAnswerDelegate;
-    const Place[] allPlaceList = calcAllPlaceList;
     const Analyzer analyzed;
 	StopWatch sw;
 
