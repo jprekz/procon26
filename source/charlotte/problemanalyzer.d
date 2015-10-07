@@ -38,10 +38,11 @@ struct StoneAnalyzed {
     bool skipFlip;
     bool skipR180;
     bool skipR90;
-    
+
     bool isSkip(Place p) const {
         if ((skipFlip && p.flip) ||
-            (skipR90 && (p.rotate == 1 || p.rotate == 3)) ||
+            ((skipR90 || skipR180) && p.rotate == 3) ||
+            (skipR90 && p.rotate == 1) ||
             (skipR180 && p.rotate == 2)) {
             return true;
         }
