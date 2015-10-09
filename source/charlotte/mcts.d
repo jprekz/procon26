@@ -192,7 +192,7 @@ class MCTS {
         if (bestScore == score && bestStones <= n.usingStones) return;
         bestScore = score;
         bestStones = n.usingStones;
-        writeln(n.nowField.toString,"Score:", score, "  Stones:", n.usingStones);
+        writeln(n.nowField.toString,"Score:", score, "  Stones:", n.usingStones, "\t", sw.peek().msecs, "msec");
         synchronized {
             if (bestScore < score) return;
             if (bestScore == score && bestStones < n.usingStones) return;
