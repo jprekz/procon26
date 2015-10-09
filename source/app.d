@@ -3,6 +3,7 @@ module app;
 import std.stdio;
 import std.string;
 import std.path;
+import std.file;
 import std.conv;
 import std.array;
 import std.algorithm;
@@ -78,11 +79,11 @@ string getProblem(Mode mode, ref int problemNumber) {
 		problemNumber = readln.chomp.to!int;
 		if (host == 1) {
 			problemFileName = "./practice/u"~"quest"~problemNumber.to!string~".txt";
-			download(unofficialPracticeHost~"/quest"~problemNumber.to!string~".txt",
+			if (!exists(problemFileName)) download(unofficialPracticeHost~"/quest"~problemNumber.to!string~".txt",
 				problemFileName);
 		} else {
 			problemFileName = "./practice/o"~"quest"~problemNumber.to!string~".txt";
-			download(officialPracticeHost~"/"~problemNumber.to!string~".txt",
+			if (!exists(problemFileName)) download(officialPracticeHost~"/"~problemNumber.to!string~".txt",
 				problemFileName);
 		}
 	} else if (mode == Mode.local) {
