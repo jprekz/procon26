@@ -38,8 +38,9 @@ void main(string[] args) {
 	string problemFileName = getProblem(mode, problemNumber);
 	string problemBaseName = baseName(problemFileName, ".txt");
 
-	auto solver = new MCTS(problemFileName, delegate (ans, score) {
-		string answerFileName = "./answer/"~problemBaseName~"-"~score.to!string~".txt";
+	auto solver = new MCTS(problemFileName, delegate (ans, score, stones) {
+		string answerFileName =
+			"./answer/"~problemBaseName~"-"~score.to!string~"-"~stones.to!string~".txt";
 		File answerFile = File(answerFileName, "w");
 		foreach (string s; ans) {
 			answerFile.writeln(s);
@@ -48,6 +49,8 @@ void main(string[] args) {
 		if (mode == Mode.canon) {
 			auto curl = execute(["curl", "http://"~canonServerHost~"/answer",
 				"--form-string", "score="~score.to!string,
+				"--form-string", "stone="~stone.to!string,
+				"--form-string", "token=jprekz",
 				"-F", "answer=@"~answerFileName[2 .. $]]);
 			curl.output.writeln;
 		} else if (mode == Mode.direct) {
@@ -55,7 +58,7 @@ void main(string[] args) {
 				"--form-string", "token="~teamToken,
 				"-F", "answer=@"~answerFileName[2 .. $]]);
 			curl.output.writeln;
-			Thread.sleep(dur!("msecs")(1000));
+			Thread.sleep(dur!("msecs")(1000));	//クソ実装
 		}
 	});
 	solver.start();

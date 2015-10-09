@@ -21,7 +21,7 @@ class Operation {
         before = o;
     }
 
-    string[] getAnswer() {
+    string[] getAnswer() const {
         string[] s = [this.toString];
         if (before is null) {
             return s;

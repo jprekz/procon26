@@ -15,11 +15,11 @@ import charlotte.problemanalyzer;
 
 class DFS {
 	const Problem problem;
-    const void delegate(string[], int) findAnswerDelegate;
+    const void delegate(string[], int, int) findAnswerDelegate;
     const Analyzer analyzed;
 	StopWatch sw;
 
-	this(string problemName, void delegate(string[], int) findAnswer) {
+	this(string problemName, void delegate(string[], int, int) findAnswer) {
 		problem = problemRead(problemName);
 		findAnswerDelegate = findAnswer;
         analyzed = new Analyzer(problem).calcStone;
@@ -31,9 +31,10 @@ class DFS {
 	    Field placeableMap;
 	    bool first;
 	    Operation searchingAnswer;
-		this(int d, Field n, Field p, bool f, Operation s) {
+		int usingStones;
+		this(int d, Field n, Field p, bool f, Operation s, int u) {
 			depth = d; nowField = n; placeableMap = p;
-			first = f; searchingAnswer = s;
+			first = f; searchingAnswer = s; usingStones = u;
 		}
 	}
 
@@ -44,7 +45,8 @@ class DFS {
 			problem.field,
 			problem.field.inv,
 			true,
-			null
+			null,
+			0
 		));
 	}
 
@@ -59,7 +61,7 @@ class DFS {
 			//writeln(nodeStack.length, " ", now.depth);
 
 			if (now.depth >= stonesTotal) {
-				end(now.nowField, now.searchingAnswer);
+				end(now);
 				continue;
 			}
 
@@ -69,7 +71,8 @@ class DFS {
 				now.nowField,
 				now.placeableMap,
 				now.first,
-				new Operation(now.searchingAnswer)
+				new Operation(now.searchingAnswer),
+				now.usingStones
 			);
 
 			Node[allPlaceList.length] results;
@@ -97,7 +100,8 @@ class DFS {
 					(now.first) ? placedStone.bordering
 						: (now.placeableMap | placedStone.bordering),
 					false,
-					new Operation(p, now.searchingAnswer)
+					new Operation(p, now.searchingAnswer),
+					now.usingStones + 1
 				);
 			}
 			foreach (result; results) {
@@ -107,11 +111,14 @@ class DFS {
 	}
 
 	int bestScore = 1024;
-	void end(Field f, Operation ans) {
-        int score = f.countEmptyCells;
+    int bestStones = 257;
+    void end(ref const Node n) {
+        int score = n.nowField.countEmptyCells;
         if (bestScore <= score) return;
+        if (bestScore == score && bestStones <= n.usingStones) return;
         bestScore = score;
-        writeln(f.toString, score);
-        findAnswerDelegate(ans.getAnswer(), score);
+        bestStones = n.usingStones;
+        writeln(n.nowField.toString,"Score:", score, "  Stones:", n.usingStones);
+        findAnswerDelegate(n.searchingAnswer.getAnswer(), score, n.usingStones);
 	}
 }
