@@ -22,7 +22,7 @@ dub
 dub --build=release
 ```
 
-詳しくはdubのリファレンス等を参照。
+"dub"の代わりに"dub build"とするとコンパイルのみを行う。詳しくはdubのリファレンス等を参照。
 
 ## Usage
 
