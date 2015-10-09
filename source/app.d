@@ -49,7 +49,7 @@ void main(string[] args) {
 		if (mode == Mode.canon) {
 			auto curl = execute(["curl", "http://"~canonServerHost~"/answer",
 				"--form-string", "score="~score.to!string,
-				"--form-string", "stone="~stone.to!string,
+				"--form-string", "stone="~stones.to!string,
 				"--form-string", "token=jprekz",
 				"-F", "answer=@"~answerFileName[2 .. $]]);
 			curl.output.writeln;
