@@ -108,13 +108,14 @@ class MCTS {
                 if (cNode.length > 100 && i % (cNode.length/100+1) != 0) continue;
                 childNodes ~= new MCTNode(n, this);
             }
+            writeln("expand[",node.depth,"]->",cNode.length,"\t",sw.peek().msecs,"msec");
             expanded = true;
         }
         MCTNode selectNext() {
             assert (expanded);
             auto totalVisits = visits;
             auto values = childNodes.map!((n) {
-                const c = 0.1;
+                const c = 0.4;
                 return n.score + c * sqrt(log(totalVisits) / n.visits).to!double;
             }).array;
             int index = 0; double max = 0.0;
@@ -127,8 +128,8 @@ class MCTS {
             return childNodes[index];
         }
         bool isExpandedCond() {
-            if (node.depth >= stonesTotal - 1) return false;
-            return visits >= 4;
+            const int threshold = 12 - stonesTotal / 32;
+            return visits >= threshold;
         }
         void updateUpwards(int scoreUpdate) {
             double normalizedScore = 1.0 - scoreUpdate.to!double / fieldCells;
@@ -151,6 +152,7 @@ class MCTS {
             while (true) {
                 MCTNode now = root;
                 while (now.expanded) now = now.selectNext;
+                if (now.node.depth == stonesTotal) break;
                 if (now.isExpandedCond) {
                     synchronized { now.expand; }
                     now = now.childNodes[0];
@@ -158,7 +160,7 @@ class MCTS {
                 now.visits++;
                 int score = playout(now.node, placesShuffle);
                 now.visits--;
-                writeln(now.node.depth,",\t",score,",\t",sw.peek().msecs,"msec");
+                //writeln(now.node.depth,",\t",score,",\t",sw.peek().msecs,"msec");
                 now.updateUpwards(score);
             }
         }
@@ -184,7 +186,10 @@ class MCTS {
         if (bestScore <= score) return;
         bestScore = score;
         writeln(f.toString, score);
-        findAnswerDelegate(ans.getAnswer(), score);
+        synchronized {
+            if (bestScore < score) return;
+            findAnswerDelegate(ans.getAnswer(), score);
+        }
     }
 }
 

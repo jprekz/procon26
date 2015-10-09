@@ -8,6 +8,7 @@
 
   * dmd 2.067.0 or later
   * dub 0.9.22 or later
+  * curl (windowsならchocolatey使えば cinst curl でおk)
 
 以下を実行するとコンパイルされ自動で実行される:
 
