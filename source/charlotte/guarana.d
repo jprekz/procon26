@@ -72,13 +72,13 @@ class Guarana {
         foreach (stoneId, ref int[] order; allPlacedStoneOrder) {
             order = iota(allPlacedStone[stoneId].length).map!(a => a.to!int).array;
         }
-        
+
         bool passSmallStone = analyzed.stone.map!(a => a.zuku).filter!(a => a < 3).array.length < stonesTotal / 5;
         writeln(passSmallStone ? "pass small tones" : "don't pass small tones");
 
         int searchWidth = 0, searchDepth = 0;
         LOOP: while (1) {
-            searchWidth += 4;
+            searchWidth += 2;
             searchDepth += 4;
             writeln("Guarana Search: ", searchWidth, " * ", searchDepth);
 
@@ -108,6 +108,7 @@ class Guarana {
                     State nextState = state.dup;
                     nextState.put(ps, stoneId.to!short);
                     pZero[j] = nextState.possibilityZero(stoneId.to!int, searchDepth);
+                    pZero[j] += nextState.pinhole * 2;
                 }
                 int index = -1, min = 1024;
                 foreach (i, z; pZero) {
@@ -268,6 +269,20 @@ class Guarana {
                 if (pMap[y][x] == 0 && map[y][x] == -1) countZero++;
             }
             return countZero;
+        }
+
+        int pinhole() const {
+            int countP = 0;
+            foreach (y, ff; map) foreach (x, b; ff) {
+                if (b != -1) continue;
+    			if (((y == 0)  || map[y - 1][x] != -1) &&
+    				((x == 0)  || map[y][x - 1] != -1) &&
+    				((x == 31) || map[y][x + 1] != -1) &&
+    				((y == 31) || map[y + 1][x] != -1)) {
+                        countP++;
+                }
+            }
+            return countP;
         }
     }
 }
