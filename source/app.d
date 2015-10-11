@@ -9,6 +9,7 @@ import std.array;
 import std.algorithm;
 import std.datetime;
 import std.getopt;
+import std.json;
 import std.parallelism;
 import std.net.curl;
 import core.thread;
@@ -18,13 +19,12 @@ import std.process;
 import charlotte.dfs;
 import charlotte.mcts;
 
-const string unofficialPracticeHost = "procon26practice.sakura.ne.jp/problem/download";
-const string officialPracticeHost = "practice26.procon-online.net/questions";
-
-const string serverHost = "testform26.procon-online.net";
-const string canonServerHost = "172.16.2.97:40000";
-const string teamTestToken = "0123456789abcdef";
-const string teamToken = "1f261bf2056249d7";
+string unofficialPracticeHost;
+string officialPracticeHost;
+string serverHost;
+string teamToken;
+string canonServerHost;
+string canonToken;
 
 enum Mode { practice, local, direct, canon }
 
@@ -36,6 +36,14 @@ void main(string[] args) {
 		"num", &problemNumber,
 		"mode", &mode
 	);
+
+	JSONValue config = parseJSON(read("config.json").to!string);
+	unofficialPracticeHost = config["unofficialPracticeHost"].str;
+	officialPracticeHost = config["officialPracticeHost"].str;
+	serverHost = config["serverHost"].str;
+	teamToken = config["teamToken"].str;
+	canonServerHost = config["canonServerHost"].str;
+	canonToken = config["canonToken"].str;
 
 	string problemFileName = getProblem(mode, problemNumber);
 	string problemBaseName = baseName(problemFileName, ".txt");
@@ -52,7 +60,7 @@ void main(string[] args) {
 			auto curl = execute(["curl", "http://"~canonServerHost~"/answer",
 				"--form-string", "score="~score.to!string,
 				"--form-string", "stone="~stones.to!string,
-				"--form-string", "token=jprekz",
+				"--form-string", "token="~canonToken,
 				"-F", "answer=@"~answerFileName[2 .. $]]);
 			curl.output.writeln;
 		} else if (mode == Mode.direct) {
