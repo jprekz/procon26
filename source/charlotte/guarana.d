@@ -32,6 +32,7 @@ class Guarana {
     const Analyzer analyzed;
     const int fieldCells;
     const int stonesTotal;
+    const int stonesZukuTotal;
     const PlacedStone[][] allPlacedStone;
     StopWatch sw;
 
@@ -43,13 +44,14 @@ class Guarana {
         writeln(sw.peek().msecs,"msec");
         fieldCells = problem.field.countEmptyCells;
         stonesTotal = problem.stone.length.to!int;
+        stonesZukuTotal = analyzed.stone.map!(a => a.zuku).reduce!("a+b");
         allPlacedStone = calcAllPlacedStone;
     }
 
     auto calcAllPlacedStone() {
         PlacedStone[][] aps;
         Place[][] placesShuffle = analyzed.places.map!dup.array;
-        aps = new PlacedStone[][problem.stone.length];
+        aps = new PlacedStone[][stonesTotal];
         foreach (i, s; problem.stone) {
             foreach (p; placesShuffle[i]) {
                 if (analyzed.stone[i].isSkip(p)) continue;
@@ -66,43 +68,79 @@ class Guarana {
     }
 
     void start() {
-        foreach (threadId; parallel(iota(threadsPerCPU), 1)) {
-            int[][] allPlacedStoneOrder = new int[][problem.stone.length];
-            foreach (stoneId, ref int[] order; allPlacedStoneOrder) {
-                order = iota(allPlacedStone[stoneId].length).map!(a => a.to!int).array;
-            }
+        int[][] allPlacedStoneOrder = new int[][stonesTotal];
+        foreach (stoneId, ref int[] order; allPlacedStoneOrder) {
+            order = iota(allPlacedStone[stoneId].length).map!(a => a.to!int).array;
+        }
+        
+        bool passSmallStone = analyzed.stone.map!(a => a.zuku).filter!(a => a < 3).array.length < stonesTotal / 5;
+        writeln(passSmallStone ? "pass small tones" : "don't pass small tones");
 
-            while (1) {
-                State state = new State(problem.field);
+        int searchWidth = 0, searchDepth = 0;
+        LOOP: while (1) {
+            searchWidth += 4;
+            searchDepth += 4;
+            writeln("Guarana Search: ", searchWidth, " * ", searchDepth);
 
-                foreach (stoneId, ref ans; state.answerLs) {
-                    int[] scores =
-                        iota(allPlacedStone[stoneId].length)
-                        .map!(i => state.eval(allPlacedStone[stoneId][i], stoneId.to!short))
-                        .array;
-                    allPlacedStoneOrder[stoneId].sort!((a, b) => scores[a] > scores[b]);
-                    if (analyzed.stone[stoneId].zuku < 3 && !state.first) continue;
-                    foreach (i; allPlacedStoneOrder[stoneId]) {
-                        PlacedStone s = allPlacedStone[stoneId][i];
-                        if (state.canPut(s, stoneId.to!short)) {
-                            state.put(s, stoneId.to!short);
-                            ans = i.to!int;
-                            break;
-                        }
+            int passedZuku = fieldCells - stonesZukuTotal;
+            State state = new State(problem.field);
+
+            foreach (stoneId, ref ans; state.answerLs) {
+                if (passSmallStone && analyzed.stone[stoneId].zuku < 3 && !state.first) continue;
+
+                int[] candidate;
+                int[] scores =
+                    iota(allPlacedStone[stoneId].length)
+                    .map!(i => state.eval(allPlacedStone[stoneId][i], stoneId.to!short))
+                    .array;
+                allPlacedStoneOrder[stoneId].sort!((a, b) => scores[a] > scores[b]);
+                foreach (i; allPlacedStoneOrder[stoneId]) {
+                    if (rndPer(searchWidth / 4)) continue;
+                    PlacedStone s = allPlacedStone[stoneId][i];
+                    if (state.canPut(s, stoneId.to!short)) {
+                        candidate ~= i;
+                        if (candidate.length >= searchWidth) break;
                     }
                 }
-                foreach (stoneId, ref ans; state.answerLs) {
-                    if (state.answerLs[stoneId] != -1) continue;
-                    foreach (i, PlacedStone s; allPlacedStone[stoneId]) {
-                        if (state.canPut(s, stoneId.to!short)) {
-                            state.put(s, stoneId.to!short);
-                            ans = i.to!int;
-                            break;
-                        }
+                int[] pZero = new int[candidate.length];
+                foreach (j, i; parallel(candidate)) {
+                    PlacedStone ps = allPlacedStone[stoneId][i];
+                    State nextState = state.dup;
+                    nextState.put(ps, stoneId.to!short);
+                    pZero[j] = nextState.possibilityZero(stoneId.to!int, searchDepth);
+                }
+                int index = -1, min = 1024;
+                foreach (i, z; pZero) {
+                    if (min > z) {
+                        index = i.to!int;
+                        min = z;
                     }
                 }
-                findAnswer(state);
+                if (index != -1) {
+                    state.put(allPlacedStone[stoneId][candidate[index]], stoneId.to!short);
+                    ans = candidate[index].to!int;
+                    write(stoneId);
+                } else {
+                    write(".");
+                    passedZuku += analyzed.stone[stoneId].zuku;
+                    if (passedZuku > bestScore) {
+                        writeln(" SKIP");
+                        continue LOOP;
+                    }
+                }
             }
+
+            foreach (stoneId, ref ans; state.answerLs) {
+                if (state.answerLs[stoneId] != -1) continue;
+                foreach (i, PlacedStone s; allPlacedStone[stoneId]) {
+                    if (state.canPut(s, stoneId.to!short)) {
+                        state.put(s, stoneId.to!short);
+                        ans = i.to!int;
+                        break;
+                    }
+                }
+            }
+            findAnswer(state);
         }
     }
 
@@ -141,7 +179,7 @@ class Guarana {
             foreach (y, ff; f) foreach(x, b; ff) {
                 map[y][x] = (b) ? -2 : -1;
             }
-            answerLs = new int[problem.stone.length];
+            answerLs = new int[stonesTotal];
             foreach (ref i; answerLs) i = -1;
         }
         this(short[32][32] m, int[] ls, bool f) {
@@ -197,6 +235,39 @@ class Guarana {
                 if (map[y][x] >= 0 && map[y][x] < stoneId) score++;
             }
             return score;
+        }
+
+        ubyte[32][32] possibilityMap(int pos, int depth = 256) {
+            ubyte[32][32] pMap;
+            foreach (stoneId; pos .. min(stonesTotal, pos + depth)) {
+                if (answerLs[stoneId] != -1) continue;
+                if (analyzed.stone[stoneId].zuku == 1) continue;
+                bool[32][32] sMap;
+                L1: foreach (ps; allPlacedStone[stoneId]) {
+                    foreach (y, ff; ps.field) foreach (x, b; ff) {
+                        if (!b) continue;
+                        if (map[y][x] != -1) continue L1;
+                    }
+                    foreach (y, ff; ps.field) foreach (x, b; ff) {
+                        if (!b) continue;
+                        sMap[y][x] = true;
+                    }
+                }
+                foreach (y, ff; sMap) foreach (x, b; ff) {
+                    if (!b) continue;
+                    pMap[y][x]++;
+                }
+            }
+            return pMap;
+        }
+
+        int possibilityZero(int pos, int depth = 256) {
+            int countZero = 0;
+            ubyte[32][32] pMap = possibilityMap(pos, depth);
+            foreach (y, ff; pMap) foreach (x, b; ff) {
+                if (pMap[y][x] == 0 && map[y][x] == -1) countZero++;
+            }
+            return countZero;
         }
     }
 }
