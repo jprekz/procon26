@@ -233,7 +233,7 @@ class MC : MCTS {
 
 
 
-class MCTSP(alias N) : MCTS {
+class MCTSP(int N) : MCTS {
     this(string problemName, void delegate(string[], int, int) findAnswer) {
         super(problemName, findAnswer);
     }
@@ -262,11 +262,11 @@ class MCTSP(alias N) : MCTS {
         }
     }
 
-    int eval (Node n) {
+    int eval(Node n) {
         if (n.searchingAnswer.passed) return 0;
         Place p = n.searchingAnswer.place;
         Stone stoneRotated = problem.stone[n.depth-1].transform(p.flip, p.rotate);
         Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
-        return (n.placeableMap & placedStone).countCells;
+        return (n.nowField & placedStone.bordering).countCells;
     }
 }
