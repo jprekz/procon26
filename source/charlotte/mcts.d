@@ -148,7 +148,8 @@ class MCTS {
         }
     }
 
-    void start() {
+    void start(int bs = 1024) {
+        bestScore = bs;
         MCTNode root = new MCTNode(new Node( 0,
             problem.field,
             problem.field.inv,
@@ -214,7 +215,8 @@ class MC : MCTS {
         super(problemName, findAnswer);
     }
 
-    override void start() {
+    override void start(int bs = 1024) {
+        bestScore = bs;
         foreach (i; parallel(iota(threadsPerCPU), 1)) {
             Place[][] placesShuffle = analyzed.places.map!dup.array;
             while (true) {

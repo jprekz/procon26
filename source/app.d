@@ -31,10 +31,12 @@ enum Mode { practice, local, direct, canon }
 
 void main(string[] args) {
 	int problemNumber = -1;
+	int guaranaSkip = 2;
 	Mode mode;
 	getopt(
 		args,
 		"num", &problemNumber,
+		"guarana|g", &guaranaSkip,
 		"mode", &mode
 	);
 
@@ -49,7 +51,7 @@ void main(string[] args) {
 	string problemFileName = getProblem(mode, problemNumber);
 	string problemBaseName = baseName(problemFileName, ".txt");
 
-	auto solver = new Guarana(problemFileName, delegate (ans, score, stones) {
+	void findAnswer(string[] ans, int score, int stones) {
 		string answerFileName =
 			"./answer/"~problemBaseName~"-"~score.to!string~"-"~stones.to!string~".txt";
 		File answerFile = File(answerFileName, "w");
@@ -71,8 +73,11 @@ void main(string[] args) {
 			curl.output.writeln;
 			Thread.sleep(dur!("msecs")(800));	//クソ実装
 		}
-	});
-	solver.start();
+	}
+	auto guarana = new Guarana(problemFileName, &findAnswer);
+	auto mctsp = new MCTSP!(64)(problemFileName, &findAnswer);
+	int bestScore = guarana.start(guaranaSkip);
+	mctsp.start(bestScore);
 }
 
 string getProblem(Mode mode, ref int problemNumber) {

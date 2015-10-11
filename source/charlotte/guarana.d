@@ -67,7 +67,7 @@ class Guarana {
         return aps;
     }
 
-    void start() {
+    int start(int skipCount) {
         int[][] allPlacedStoneOrder = new int[][stonesTotal];
         foreach (stoneId, ref int[] order; allPlacedStoneOrder) {
             order = iota(allPlacedStone[stoneId].length).map!(a => a.to!int).array;
@@ -80,6 +80,7 @@ class Guarana {
         LOOP: while (1) {
             searchWidth += 2;
             searchDepth += 4;
+            if (searchWidth > 100) return bestScore;
             writeln("Guarana Search: ", searchWidth, " * ", searchDepth);
 
             int passedZuku = fieldCells - stonesZukuTotal;
@@ -126,6 +127,8 @@ class Guarana {
                     passedZuku += analyzed.stone[stoneId].zuku;
                     if (passedZuku > bestScore) {
                         writeln(" SKIP");
+                        skipCount--;
+                        if (skipCount <= 0) return bestScore;
                         continue LOOP;
                     }
                 }
@@ -143,6 +146,7 @@ class Guarana {
             }
             findAnswer(state);
         }
+        assert(0);
     }
 
 	int bestScore = 1024;
