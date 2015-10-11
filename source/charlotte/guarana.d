@@ -23,23 +23,23 @@ bool rndPer(int p) {
 
 class IntMap {
     //-2障害物 -1空白 0~石
-    short[32][32] _map;
+    short[32][32] map;
     bool first = true;
     this(Field f) {
         foreach (y, ff; f) foreach(x, b; ff) {
-            _map[y][x] = (b) ? -2 : -1;
+            map[y][x] = (b) ? -2 : -1;
         }
     }
     this(short[32][32] m, bool f) {
-        _map = m;
+        map = m;
         first = f;
     }
     IntMap dup() {
-        return new IntMap(_map, first);
+        return new IntMap(map, first);
     }
     override string toString() const {
         char[] str;
-        foreach (a; _map) {
+        foreach (a; map) {
             foreach (n; a) {
                 string block = toImpl16(n);
                 while (block.length < 2) block = '0'~block;
@@ -55,12 +55,12 @@ class IntMap {
     bool canPut(ref const PlacedStone ps, short stoneId) {
         foreach (y, ff; ps.field) foreach(x, b; ff) {
             if (!b) continue;
-            if (_map[y][x] != -1) return false;
+            if (map[y][x] != -1) return false;
         }
         if (!first) {
             foreach (y, ff; ps.field.bordering) foreach(x, b; ff) {
                 if (!b) continue;
-                if (_map[y][x] >= 0 && _map[y][x] < stoneId) return true;
+                if (map[y][x] >= 0 && map[y][x] < stoneId) return true;
             }
             return false;
         }
@@ -70,7 +70,7 @@ class IntMap {
     void put(ref const PlacedStone ps, short stoneId) {
         foreach (y, ff; ps.field) foreach(x, b; ff) {
             if (!b) continue;
-            _map[y][x] = stoneId;
+            map[y][x] = stoneId;
         }
         first = false;
     }
@@ -79,7 +79,7 @@ class IntMap {
         int score = 0;
         foreach (y, ff; ps.field.bordering) foreach(x, b; ff) {
             if (!b) continue;
-            if (_map[y][x] >= 0 && _map[y][x] < stoneId) score++;
+            if (map[y][x] >= 0 && map[y][x] < stoneId) score++;
         }
         return score;
     }
@@ -142,33 +142,28 @@ class Guarana {
 
                 IntMap intMap = new IntMap(problem.field);
 
-                bool[] used = new bool[problem.stone.length];
-
                 foreach (stoneId, ref ans; answerLs) {
                     int[] scores =
                         iota(allPlacedStone[stoneId].length)
                         .map!(i => intMap.eval(allPlacedStone[stoneId][i], stoneId.to!short))
                         .array;
                     allPlacedStoneOrder[stoneId].sort!((a, b) => scores[a] > scores[b]);
-                    if (analyzed.stone[stoneId].zuku < 3 && !intMap.first && rndPer(70)) continue;
+                    if (analyzed.stone[stoneId].zuku < 3 && !intMap.first) continue;
                     foreach (i; allPlacedStoneOrder[stoneId]) {
-                        if (rndPer(5)) continue;
                         PlacedStone s = allPlacedStone[stoneId][i];
                         if (intMap.canPut(s, stoneId.to!short)) {
                             intMap.put(s, stoneId.to!short);
                             ans = i.to!int;
-                            used[stoneId] = true;
                             break;
                         }
                     }
                 }
                 foreach (stoneId, ref ans; answerLs) {
-                    if (used[stoneId]) continue;
+                    if (answerLs[stoneId] != -1) continue;
                     foreach (i, PlacedStone s; allPlacedStone[stoneId]) {
                         if (intMap.canPut(s, stoneId.to!short)) {
                             intMap.put(s, stoneId.to!short);
                             ans = i.to!int;
-                            used[stoneId] = true;
                             break;
                         }
                     }
