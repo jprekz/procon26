@@ -18,13 +18,14 @@ import std.process;
 //import dfs.dfs;
 import charlotte.dfs;
 import charlotte.mcts;
+import charlotte.guarana;
 
-string unofficialPracticeHost;
-string officialPracticeHost;
-string serverHost;
-string teamToken;
-string canonServerHost;
-string canonToken;
+shared string unofficialPracticeHost;
+shared string officialPracticeHost;
+shared string serverHost;
+shared string teamToken;
+shared string canonServerHost;
+shared string canonToken;
 
 enum Mode { practice, local, direct, canon }
 
@@ -48,7 +49,7 @@ void main(string[] args) {
 	string problemFileName = getProblem(mode, problemNumber);
 	string problemBaseName = baseName(problemFileName, ".txt");
 
-	auto solver = new MCTSP!(64)(problemFileName, delegate (ans, score, stones) {
+	auto solver = new Guarana(problemFileName, delegate (ans, score, stones) {
 		string answerFileName =
 			"./answer/"~problemBaseName~"-"~score.to!string~"-"~stones.to!string~".txt";
 		File answerFile = File(answerFileName, "w");

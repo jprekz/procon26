@@ -40,6 +40,9 @@ struct Place {
     Rotation rotate;
     int x;
     int y;
+    string toString() const {
+		return x.to!string ~ " " ~ y.to!string ~ " " ~ (flip ? "T " : "H ") ~ (rotate * 90).to!string;
+    }
 }
 
 enum Rotation: byte {
