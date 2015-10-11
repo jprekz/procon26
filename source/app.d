@@ -22,8 +22,9 @@ const string unofficialPracticeHost = "procon26practice.sakura.ne.jp/problem/dow
 const string officialPracticeHost = "practice26.procon-online.net/questions";
 
 const string serverHost = "testform26.procon-online.net";
-const string canonServerHost = "192.168.11.2:40000";
-const string teamToken = "0123456789abcdef";
+const string canonServerHost = "192.168.43.110:40000";
+const string teamTestToken = "0123456789abcdef";
+const string teamToken = "1f261bf2056249d7";
 
 enum Mode { practice, local, direct, canon }
 
@@ -39,7 +40,7 @@ void main(string[] args) {
 	string problemFileName = getProblem(mode, problemNumber);
 	string problemBaseName = baseName(problemFileName, ".txt");
 
-	auto solver = new MCTS(problemFileName, delegate (ans, score, stones) {
+	auto solver = new MCTSP!(32)(problemFileName, delegate (ans, score, stones) {
 		string answerFileName =
 			"./answer/"~problemBaseName~"-"~score.to!string~"-"~stones.to!string~".txt";
 		File answerFile = File(answerFileName, "w");
@@ -59,7 +60,7 @@ void main(string[] args) {
 				"--form-string", "token="~teamToken,
 				"-F", "answer=@"~answerFileName[2 .. $]]);
 			curl.output.writeln;
-			Thread.sleep(dur!("msecs")(1000));	//クソ実装
+			Thread.sleep(dur!("msecs")(800));	//クソ実装
 		}
 	});
 	solver.start();

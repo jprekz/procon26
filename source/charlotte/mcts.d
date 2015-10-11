@@ -47,13 +47,14 @@ class MCTS {
         }
         Node[] calcChildNodes() {
             Node[] ls;
-            mixin findNext!(this, allPlaceList, false, delegate (n){ ls ~= n; });
+            mixin findNext!(this, allPlaceList, 0, delegate (n){ ls ~= n; });
             findNext();
             return ls;
         }
     }
 
-    void findNext(alias n, alias pRange, bool first, alias findNode)() {
+    void findNext(alias n, alias pRange, int finds, alias findNode)() {
+        static if (finds > 1) int count = finds;
         foreach (p; pRange) {
             if (analyzed.stone[n.depth].isSkip(p)) continue;
 
@@ -81,7 +82,12 @@ class MCTS {
                 new Operation(p, n.searchingAnswer),
                 n.usingStones + 1
             ));
-            static if (first) return;
+            static if (finds == 1) return;
+            else static if (finds == 0) {}
+            else {
+                count--;
+                if (count == 0) return;
+            }
         }
         findNode(new Node(
             n.depth + 1,
@@ -179,7 +185,7 @@ class MCTS {
             }
             Place[] rndPlaceList = places[now.depth];
             rndPlaceList.randomShuffle;
-            mixin findNext!(now, rndPlaceList, true, delegate (n){ now = n; });
+            mixin findNext!(now, rndPlaceList, 1, delegate (n){ now = n; });
             findNext();
         }
     }
@@ -219,8 +225,48 @@ class MC : MCTS {
                     null,
                     0
                 ), placesShuffle);
-                writeln(score,",\t",sw.peek().msecs,"msec");
+                //writeln(score,",\t",sw.peek().msecs,"msec");
             }
         }
+    }
+}
+
+
+
+class MCTSP(alias N) : MCTS {
+    this(string problemName, void delegate(string[], int, int) findAnswer) {
+        super(problemName, findAnswer);
+    }
+
+    override int playout(Node firstNode, Place[][] places) {
+        Node now = firstNode;
+        while (true) {
+            if (now.depth >= stonesTotal) {
+                end(now);
+                return now.nowField.countEmptyCells;
+            }
+            Place[] rndPlaceList = places[now.depth];
+            Node[] next = [];
+            rndPlaceList.randomShuffle;
+            mixin findNext!(now, rndPlaceList, N, delegate (n){ next ~= n; });
+            findNext();
+            int[] ss = next.map!(n => eval(n)).array;
+            int index, max = -1;
+            foreach (i, v; ss) {
+                if (max < v) {
+                    max = v;
+                    index = i.to!int;
+                }
+            }
+            now = next[index];
+        }
+    }
+
+    int eval (Node n) {
+        if (n.searchingAnswer.passed) return 0;
+        Place p = n.searchingAnswer.place;
+        Stone stoneRotated = problem.stone[n.depth-1].transform(p.flip, p.rotate);
+        Field placedStone = stoneRotated.putStoneOnField(p.x, p.y);
+        return (n.placeableMap & placedStone).countCells;
     }
 }
