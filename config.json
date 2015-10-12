@@ -3,9 +3,8 @@
     "officialPracticeHost": "practice26.procon-online.net/questions",
 
     "serverHost": "testform26.procon-online.net",
-    "teamToken": "1f261bf2056249d7",
     "teamToken": "0123456789abcdef",
 
-    "canonServerHost": "192.168.1.157:40000",
+    "canonServerHost": "127.0.0.1:40000",
     "canonToken": "jprekz"
 }

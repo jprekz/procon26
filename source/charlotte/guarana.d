@@ -52,7 +52,7 @@ class Guarana {
         PlacedStone[][] aps;
         Place[][] placesShuffle = analyzed.places.map!dup.array;
         aps = new PlacedStone[][stonesTotal];
-        foreach (i, s; problem.stone) {
+        foreach (i, s; parallel(problem.stone)) {
             foreach (p; placesShuffle[i]) {
                 if (analyzed.stone[i].isSkip(p)) continue;
                 Stone stoneRotated = s.transform(p.flip, p.rotate);
@@ -78,8 +78,8 @@ class Guarana {
 
         int searchWidth = 0, searchDepth = 0;
         LOOP: while (1) {
-            searchWidth += 2;
-            searchDepth += 4;
+            searchWidth += 4;   //いじれる
+            searchDepth += 4;   //いじれる
             if (searchWidth > 100) return bestScore;
             writeln("Guarana Search: ", searchWidth, " * ", searchDepth);
 
@@ -109,7 +109,7 @@ class Guarana {
                     State nextState = state.dup;
                     nextState.put(ps, stoneId.to!short);
                     pZero[j] = nextState.possibilityZero(stoneId.to!int, searchDepth);
-                    pZero[j] += nextState.pinhole * 2;
+                    pZero[j] += nextState.pinhole * 4;  //いじれる
                 }
                 int index = -1, min = 1024;
                 foreach (i, z; pZero) {
