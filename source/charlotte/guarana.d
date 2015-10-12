@@ -74,7 +74,7 @@ class Guarana {
         }
 
         bool passSmallStone = analyzed.stone.map!(a => a.zuku).filter!(a => a < 3).array.length < stonesTotal / 5;
-        writeln(passSmallStone ? "pass small tones" : "don't pass small tones");
+        writeln(passSmallStone ? "pass small stones" : "don't pass small stones");
 
         int searchWidth = 0, searchDepth = 0;
         LOOP: while (1) {
